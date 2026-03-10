@@ -1,93 +1,544 @@
-# Placeholder-Task-1029
+# Advanced-Backend-2026
+
+![](/Artifacts/C4L1.drawio.svg)
+
+![](/Artifacts/C4L2.drawio.svg)
+
+![](/Artifacts/МПО%20(1).drawio.svg)
+
+## Ролевая модель:
+* Абитуриент - человек, подающий заявление на поступление в учебное заведение.
+* Менеджер - сотрудник факультета, основной задачей которого является работа с абитуриентами и их документами.
+* Главный менеджер - помимо функционала актера с ролью “Менеджер” имеют возможность управлять течением приёмной кампании.
+* Администратор - основной задачей является управление и обслуживание системы. Кроме своих возможностей, он обладает всеми системными функциями пользователей с другими ролями.
+
+### Обратите внимание!
+* Иерархия (Админ > Гл.Менеджер > Менеджер > Абитуриент) строго соблюдается. Нижестоящие не имеют доступа ко всем ресурсам вышестоящих.
+* Менеджер может просматривать данные всех абитуриентов, но редактировать только тех абитуриентов, для которых он назначен менеджером.
+* Главный менеджер и администратор могут просматривать и редактировать данные всех абитуриентов.  
+* Количество выбранных программ не может быть больше, чем N (N - конфигурируется в приложении).
+Программы должны относиться к одной ступени обучения. Например:
+абитуриент “A” не может одновременно выбрать программу с уровнем “Магистратура” и “Аспирантура”;
+абитуриент “B” может выбрать программу с уровнем “Специалитет”, если у него  уже выбрана программа с уровнем “Бакалавриат”.
+* Если у абитуриента добавлен документ об образовании, уровень выбранной программы должен быть либо аналогичен уровню документа об образовании, либо входить в список доступных для обучения
 
 
+## Спецификация схемы аутентификации:
+### Схема: Access-Refresh tokens
 
-## Getting started
+### Access token info:
+* Type: JWT
+* LifeTime: 900s
+* Claims: UserId, UserRole
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Refresh Token info:
+* Lifetime: 604 800s (10080min | 168h | 7 days)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-## Add your files
+## Спецификация Web API:
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Функционал клиента (абитуриента)
 
+### 1. Возможность регистрации в системе:
+[Доступ: <kbd>Все</kbd> ]
+* `POST api/v1/auth/register`
+
+### Тело запроса: 
+```json
+{
+  "fullname": "Ivanov Ivan Ivanovich",
+  "email": "admin@example.com",
+  "password": "Admin123!",
+  "dateOfBirth":"2001-01-01",
+  "gender": "Male",
+  "citizenship": "Russian",
+  "phoneNumber": "+7 999 876 43 21"
+}
 ```
-cd existing_repo
-git remote add origin https://git.students.kupriyanov.space/ivada000-tasks/Placeholder-Task-1029.git
-git branch -M master
-git push -uf origin master
+### Тело ответа: 
+```json
+{
+  "access_token": "eyJhciOiJIzI1NiInR5cCI6Ikp...",
+  "refresh_token": "wIiwieyJzdWIiOiIxMjMY3ODkb...",
+  "expires_in": 900
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 201 Created, 400 Bad Request, 409 Conflict
+
+### 2. Возможность аутентификации/авторизации в системе:
+[Доступ: <kbd>Все</kbd> ]
+* `POST api/v1/auth/login`
+### Тело запроса:
+```json
+{
+  "email": "admin@example.com",
+  "password": "Admin123!"
+}
+```
+### Тело ответа:
+```json
+{
+  "access_token": "eyJhciOiJIzI1NiInR5cCI6Ikp...",
+  "refresh_token": "wIiwieyJzdWIiOiIxMjMY3ODkb...",
+  "expires_in": 900
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 401 Unauthorized
+
+[Доступ: <kbd>Все</kbd> ]
+* `POST api/v1/auth/refresh`
+### Тело ответа:
+```json
+{
+  "access_token": "eyJhciOiJIzI1NiInR5cCI6Ikp...",
+  "refresh_token": "wIiwieyJzdWIiOiIxMjMY3ODkb...",
+  "expires_in": 900
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 401 Unauthorized
+
+[Доступ: <kbd>Все</kbd> ]
+* `POST api/v1/auth/logout`
+#### Ожидаемые возвращаемые статус-коды: 204 No Content, 401 Unauthorized
+
+### 3. Возможность сменить данные для входа (email, пароль)
+[Доступ: <kbd>Все</kbd> ]
+* `PATCH api/v1/auth/credentials/password`
+### Тело запроса:
+```json
+{
+  "old_password": "Admin123!",
+  "new_password": "Admin12345!",
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 400 Bad Request, 401 Unauthorized
+
+[Доступ: <kbd>Все</kbd> ]
+* `PATCH api/v1/auth/credentials/email`
+### Тело запроса:
+```json
+{
+  "email": "admin@example.com",
+  "password": "Admin123!"
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 401 Unauthorized, 409 Conflict
+
+### 4. Просмотр личного профиля 
+[Доступ: <kbd>Все</kbd> ]
+* `GET api/v1/users/{id}/profile`
+* `GET api/v1/users/me/profile` – id автоматически возьмётся из токена
+### Тело ответа:
+```json
+{
+  "id": "30dd879c-ee2f-11...",
+  "fullname": "Ivanov Ivan Ivanovich",
+  "email": "ivan.ivanov@example.com",
+  "dateOfBirth": "2001-01-01",
+  "gender": "Male",
+  "citizenship": "Russian",
+  "phoneNumber": "+7 999 876 43 21"
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 401 Unauthorized, 403 Forbidden, 404 Not Found 
+
+### 5. Обновление личных данных (ФИО, email, номер телефона, дата рождения, пол, гражданство)
+[Доступ: <kbd>Все</kbd> ]
+* `PATCH api/v1/users/{id}`
+* `PATCH api/v1/users/me` – id автоматически возьмётся из токена
+### Тело запроса: 
+```json
+{
+  "fullname": "Ivanov Ivan Ivanovich",
+  "email": "ivan.ivanov@example.com",
+  "dateOfBirth": "2001-01-01",
+  "gender": "Male",
+  "citizenship": "Russian",
+  "phoneNumber": "+7 999 876 43 21"
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
+
+### 6. Просмотр документов (отдельно каждого вида)
+[Доступ: <kbd>Все</kbd> ]
+* `GET api/v1/users/{id}/documents`
+* `GET api/v1/users/me/documents` – id автоматически возьмётся из токена
+
+ ### Query – параметры:
+`type (enum, допустимые значения: "Passport", "Diploma")`
+– фильтрация по типу документа
+  
+### Тело ответа:
+```json
+[
+  {
+    "type": "Passport",
+    "id":"",
+    "series": "",
+    "number": "",
+    "placeOfBirth": "",
+    "issuedWhen": "",
+    "issuedBy": "",
+    "url": ""
+  },
+  {
+    "type": "Diploma",
+    "id":"",
+    "name": "",
+    "diplomaType": "",
+    "url": ""
+  }
+]
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 401 Unauthorized, 403 Forbidden
+
+### 7. Возможность скачать скан документа 
+[Доступ: <kbd>Все</kbd> ]
+* `GET api/v1/users/{id}/documents/{docId}/file`
+* `GET api/v1/users/me/documents/{docId}/file` – id автоматически возьмётся из токена
+### Тело ответа:
+```json
+{
+  "url": "string",
+  "expiresIn": 900
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 401 Unauthorized, 403 Forbidden, 404 Not Found
+
+### 8. Возможность редактировать данные документа
+[Доступ: <kbd>Все</kbd> ]
+* `PATCH api/v1/users/{id}/documents/{docId}`
+* `PATCH api/v1/users/me/documents/{docId}` – id автоматически возьмётся из токена
+### Тело запроса:
+```json
+{
+   {
+    "type": "Passport",
+    "series": "",
+    "number": "",
+    "placeOfBirth": "",
+    "issuedWhen": "",
+    "issuedBy": ""
+  },
+  {
+    "type": "Diploma",
+    "name": "",
+    "diplomaType": ""
+  } 
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 401 Unauthorized, 403 Forbidden, 404 Not Found
+
+### 9. Возможность удалить скан документа
+[Доступ: <kbd>Все</kbd> ]
+* `DELETE api/v1/users/{id}/documents/{docId}/file`
+* `DELETE api/v1/users/me/documents/{docId}/file` – id автоматически возьмётся из токена
+#### Ожидаемые возвращаемые статус-коды: 204 No Content, 401 Unauthorized, 403 Forbidden, 404 Not Found
+
+### 10. Возможность загрузить новый скан документа
+[Доступ: <kbd>Все</kbd> ]
+* `POST api/v1/users/{id}/documents/{docId}/file`
+* `POST api/v1/users/me/documents/{docId}/file` – id автоматически возьмётся из токена
+### Тело запроса:
+```
+(Content-Type: multipart/form-data)
+your_file.pdf
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
+
+### 11. Возможность посмотреть список программ с возможностью пагинации и следующими фильтрациями:
+[Доступ: <kbd>Все</kbd> ]
+* `GET api/v1/programs`
+
+ ### Query – параметры:
+`page (int, default: 1)`
+– номер страницы
+
+`size (int, default: 10, max: 100)`
+– размер страницы
+
+`faculty (List<string>, опционально)`
+– фильтрация по факультету
+
+`level (int, опционально)`
+ – фильтрация по уровню образования
+ 
+`mode (string, опционально)`
+ – фильтрация по форме обучения
+ 
+`language (string, опционально)`
+ – фильтрация по языку обучения
+ 
+`program (string, опционально)`
+ – поиск по названию/коду программы (по части).
+
+### Тело ответа:
+```json
+{
+  "programs": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "createTime": "2026-03-01T19:36:08.230Z",
+      "name": "string",
+      "code": "string",
+      "language": "string",
+      "educationForm": "string",
+      "faculty": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "createTime": "2026-03-01T19:36:08.230Z",
+        "name": "string"
+      },
+      "educationLevel": {
+        "id": 0,
+        "name": "string"
+      }
+    }
+  ],
+  "pagination": {
+    "size": 0,
+    "count": 0,
+    "current": 0
+  }
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 400 Bad Request, 401 Unauthorized 
+
+### 12. Возможность добавить программу в список выбранных программ для обучения
+[Доступ: <kbd>Все</kbd> ]
+* `POST api/v1/users/{id}/programs`
+* `POST api/v1/users/me/programs` – id автоматически возьмётся из токена
+### Тело запроса:
+```json
+{
+  "programId": "3fa85f64-5717-45..."
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 201 Created, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
+
+### 13. Возможность изменить приоритет программы
+[Доступ: <kbd>Все</kbd> ]
+* `PATCH api/v1/users/{id}/programs/{programId}`
+* `PATCH api/v1/users/me/programs/{programId}` – id автоматически возьмётся из токена
+### Тело запроса:
+```json
+{
+  "priority": "int"
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
+
+### 14. Возможность удалить программу из выбранного списка
+[Доступ: <kbd>Все</kbd> ]
+* `DELETE api/v1/users/{id}/programs/{programId}`
+* `DELETE api/v1/users/me/programs/{programId}` – id автоматически возьмётся из токена
+#### Ожидаемые возвращаемые статус-коды: 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden
+
+### 15. Возможность посмотреть список выбранных программ
+[Доступ: <kbd>Все</kbd> ]
+* `GET api/v1/users/{id}/programs`
+* `GET api/v1/users/me/programs` – id автоматически возьмётся из токена
+### Тело ответа:
+```json
+[
+  {
+    "priority": "int",
+    "program": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "createTime": "2026-03-06T20:34:51.096Z",
+        "name": "string",
+        "code": "string",
+        "language": "string",
+        "educationForm": "string",
+        "faculty": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "createTime": "2026-03-06T20:34:51.096Z",
+          "name": "string"
+        },
+        "educationLevel": {
+          "id": 0,
+          "name": "string"
+      }
+    }
+  }
+]
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 401 Unauthorized, 403 Forbidden
+
+## Функционал “Менеджера” 
+
+### 1. Взять поступление абитуриента.
+[ <kbd>email-notify</kbd> ]
+
+[Доступ: <kbd>Admin</kbd> <kbd>Gen.Manager</kbd> <kbd>Manager</kbd> ]
+* `POST api/v1/admissions/{id}/manager`
+
+### 2. Отказаться от поступления абитуриента (вернуть его в общий пул заявок).
+[ <kbd>email-notify</kbd> ]
+
+[Доступ: <kbd>Admin</kbd> <kbd>Gen.Manager</kbd> <kbd>Manager</kbd> ]
+* `DELETE api/v1/admissions/{id}/manager`
+
+### 3. Просмотреть заявки абитуриентов с пагинацией  и следующими фильтрациями и сортировками:
+[Доступ: <kbd>Admin</kbd> <kbd>Gen.Manager</kbd> <kbd>Manager</kbd> ]
+* `GET api/v1/admissions`
+
+### Query – параметры:
+`page (int, default: 1)`
+– номер страницы
+
+`size (int, default: 10, max: 100)`
+– размер страницы
+
+`name (string, опционально)`
+– поиск по части имени
+
+`program (string, опционально)`
+– фильтр по программе
+
+`faculty (string, опционально)`
+– фильтрация по факультету - multiselect (у абитуриента должна быть выбрана хотя бы одна программа данного факультета)
+
+`status (enum, опционально)`
+– Фильтрация по статусу поступления
+
+`isManaged (bool, опционально)`
+– Отображение только тех абитуриентов, у которых еще не назначен менеджер
+
+`managerId (guid, опционально)`
+– Отображение абитуриентов, привязанных к данному менеджеру
+
+`dateSort (string, опционально)`
+– Сортировка по дате внесения последних изменений (по убыванию, по возрастанию)
+
+### Тело ответа:
+```json
+{
+  "admissions":
+    [
+      {
+        "userId":"guid",
+        "admissionId":"guid",
+        "status": "enum",
+        "programs" : [
+                {
+            "priority": "int",
+            "program": {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "createTime": "2026-03-06T20:34:51.096Z",
+                "name": "string",
+                "code": "string",
+                "language": "string",
+                "educationForm": "string",
+                "faculty": {
+                  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "createTime": "2026-03-06T20:34:51.096Z",
+                  "name": "string"
+                },
+                "educationLevel": {
+                  "id": 0,
+                  "name": "string"
+                }
+              }
+          }
+        ]
+      }
+    ],
+  "pagination": {
+    "size": 0,
+    "count": 0,
+    "current": 0
+  }
+}
 ```
 
-## Integrate with your tools
+### 4. Изменить статус поступления
+[ <kbd>email-notify</kbd> ]
 
-- [ ] [Set up project integrations](https://git.students.kupriyanov.space/ivada000-tasks/Placeholder-Task-1029/-/settings/integrations)
+[Доступ: <kbd>Admin</kbd> <kbd>Gen.Manager</kbd> <kbd>Manager</kbd> ]
+* `PATCH api/v1/admissions/{id}`
+### Тело запроса:
+```json
+{
+  "status": "enum"
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-## Collaborate with your team
+## Функционал “Главного менеджера” 
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### 1. Возможность посмотреть список менеджеров, главных менеджеров
+[Доступ: <kbd>Admin</kbd> <kbd>Gen.Manager</kbd> ]
+* `GET api/v1/managers`
 
-## Test and Deploy
+### Query – параметры:
+`position (enum, Допустимые значения: "Manager", "GeneralManager")`
+– должность менеджера
+### Тело ответа:
+```json
+[
+  {
+    "id": "30dd879c-ee2f-11...",
+    "fullname": "Ivanov Ivan Ivanovich",
+    "email": "ivan.ivanov@example.com",
+    "dateOfBirth": "2001-01-01",
+    "gender": "Male",
+    "citizenship": "Russian",
+    "phoneNumber": "+7 999 876 43 21",
+    "role": "enum"
+  }
+]
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 400 Bad Request, 401 Unauthorized, 403 Forbidden
 
-Use the built-in continuous integration in GitLab.
+### 2. Возможность назначить менеджера на поступление, если оно свободно
+[ <kbd>email-notify</kbd> ]
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+[Доступ: <kbd>Admin</kbd> <kbd>Gen.Manager</kbd> ]
+* `PATCH api/v1/admissions/{id}/manager`
+### Тело запроса:
+```json
+{
+  "managerId": "23f45e89-8b5a-5c55..."
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-***
+Функционал “Администратора” 
+### 1. Возможность импорта справочников: факультет, программа, уровень образования
+[Доступ: <kbd>Admin</kbd> ]
+* `GET api/v1/admin/references`
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 400 Bad Request, 401 Unauthorized, 403 Forbidden
 
-# Editing this README
+### 2. Возможность посмотреть статус импорта справочников
+[Доступ: <kbd>Admin</kbd> ]
+* `GET api/v1/references`
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 400 Bad Request, 401 Unauthorized, 403 Forbidden
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### 3. Возможность создать нового менеджера, главного менеджера
+[ <kbd>email-notify</kbd> ]
 
-## Suggestions for a good README
+[Доступ: <kbd>Admin</kbd> ]
+* `POST api/v1/managers`
+#### Ожидаемые возвращаемые статус-коды: 201 Created, 400 Bad Request, 401 Unauthorized, 403 Forbidden
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### 4. Возможность отредактировать данные менеджера 
+[Доступ: <kbd>Admin</kbd> ]
+* `PATCH api/v1/managers/{id}`
+### Тело запроса: 
+```json
+{
+  "email": "admin@example.com",
+  "fullname": "Ivanov Ivan Ivanovich",
+  "email": "ivan.ivanov@example.com",
+  "dateOfBirth": "2001-01-01",
+  "gender": "Male",
+  "citizenship": "Russian",
+  "phoneNumber": "+7 999 876 43 21"
+}
+```
+#### Ожидаемые возвращаемые статус-коды: 200 Ok, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### 5. Возможность удалить менеджера, главного менеджера
+[Доступ: <kbd>Admin</kbd> ]
+* `DELETE api/v1/managers/{id}`
+#### Ожидаемые возвращаемые статус-коды: 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
