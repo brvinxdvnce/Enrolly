@@ -1,0 +1,6 @@
+@Enrolly.Accounts.Presentaton_HostAddress = http://localhost:5204
+
+GET {{Enrolly.Accounts.Presentaton_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
