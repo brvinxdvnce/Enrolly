@@ -12,6 +12,13 @@
         <PackageReference Include="Scalar.AspNetCore" />
         
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+        
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Enrolly.Accounts.Infrastructure\Enrolly.Accounts.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

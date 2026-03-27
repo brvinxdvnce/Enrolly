@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Accounts.Presentation.Controllers;
 
@@ -24,4 +24,19 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
+}*/
+
+
+using Microsoft.AspNetCore.Mvc;
+
+[ApiController]
+[Route("api/v1/users")]
+public class UsersController : ControllerBase
+{
+        
+    
+    public async Task<IActionResult> UpgradeRole()
+    {
+        return Ok();
+    }
 }

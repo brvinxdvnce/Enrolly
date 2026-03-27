@@ -6,7 +6,19 @@ namespace Enrolly.Accounts.Presentation.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    [HttpPost("register")]
+    [HttpPost("login")]
+    public async Task<IActionResult> Login()
+    {
+        return Ok();
+    }
+    
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        return Ok();
+    }
+    
+    /*[HttpPost("register")]
     public async Task<IActionResult> Register()
     {
         return Ok();
@@ -28,5 +40,5 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Logout()
     {
         return Ok();
-    }
+    }*/
 }

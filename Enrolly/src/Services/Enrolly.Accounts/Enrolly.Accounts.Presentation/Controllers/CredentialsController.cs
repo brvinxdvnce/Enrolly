@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Accounts.Presentation.Controllers;
 
@@ -17,4 +17,4 @@ public class CredentialsController : ControllerBase
     {
         return Ok();
     }
-}
+}*/

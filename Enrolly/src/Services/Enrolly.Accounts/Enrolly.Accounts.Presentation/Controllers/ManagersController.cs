@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Accounts.Presentation.Controllers;
 
@@ -6,4 +6,4 @@ namespace Enrolly.Accounts.Presentation.Controllers;
 public class ManagersController : ControllerBase
 {
     
-}
+}*/
