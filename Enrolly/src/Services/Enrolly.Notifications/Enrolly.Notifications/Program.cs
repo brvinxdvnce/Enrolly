@@ -14,4 +14,5 @@ builder.Services.Configure<SmtpSettings>
     (builder.Configuration.GetSection("SmtpSettings"));
 
 var host = builder.Build();
+
 host.Run();

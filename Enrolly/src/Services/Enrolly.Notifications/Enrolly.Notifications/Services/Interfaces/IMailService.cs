@@ -1,6 +1,8 @@
-﻿namespace Enrolly.Notifications.Services.Interfaces;
+﻿using Enrolly.Notifications.Models.Notifications;
+
+namespace Enrolly.Notifications.Services.Interfaces;
 
 public interface IMailService
 {
-    Task SendAsync(string targetEmail, string subject, string body);
+    Task SendAsync(IEmailNotification botify);
 }

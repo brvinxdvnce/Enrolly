@@ -1,4 +1,5 @@
 ﻿using Enrolly.Notifications.Configurations;
+using Enrolly.Notifications.Models.Notifications;
 using Enrolly.Notifications.Services.Interfaces;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -16,22 +17,19 @@ public class EmailService : IMailService
         _smtpSettings = smtpSettings.Value;
     }
     
-    public async Task SendAsync(
-        string targetEmail,
-        string subject,
-        string body)
+    public async Task SendAsync(IEmailNotification notify)
     {
         try
         {
             var message = new MimeMessage();
             
-            message.Subject = subject;
+            message.Subject = notify.Subject;
             message.Date = DateTimeOffset.Now;
             
             message.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.Email));
-            message.To.Add(MailboxAddress.Parse(targetEmail));
+            message.To.Add(MailboxAddress.Parse(notify.To));
             
-            var builder = new BodyBuilder { TextBody = body };
+            var builder = new BodyBuilder { TextBody = notify.Body };
             message.Body = builder.ToMessageBody();
 
             using var smtpClient = new SmtpClient();

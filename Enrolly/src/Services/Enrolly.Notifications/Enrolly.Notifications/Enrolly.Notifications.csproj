@@ -11,5 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="MailKit" />
     <PackageReference Include="MimeKit" />
+      
+    <PackageReference Include="Yarp.ReverseProxy" />
   </ItemGroup>
 </Project>

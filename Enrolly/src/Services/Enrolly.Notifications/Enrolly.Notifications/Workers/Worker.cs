@@ -1,3 +1,4 @@
+using Enrolly.Notifications.Models.Notifications;
 using Enrolly.Notifications.Services.Interfaces;
 
 namespace Enrolly.Notifications.Workers;
@@ -16,9 +17,9 @@ public class Worker : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await _mailService.SendAsync(
-            "ivanovdanil.hits2024@gmail.com",
-            "Что-то произошло",
-            "на марсе классно");
+            new DefaultNotification(
+                "souka.tanatos@gmail.com",
+                "Полинка"));
         
         while (!stoppingToken.IsCancellationRequested)
         {
