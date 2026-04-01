@@ -3,6 +3,8 @@ using System.Text;
 using DictionaryWorker;
 using Enrolly.EduDictionary.Application.Configuration;
 using Enrolly.EduDictionary.Application.Database;
+using Enrolly.EduDictionary.Application.Repositories;
+using Enrolly.EduDictionary.Domain.Repositories;
 using Enrolly.Shared.Logging;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -10,6 +12,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddHostedService<DictionaryUpdateWorker>();
@@ -30,6 +33,7 @@ builder.Services.AddDbContext<DictionaryDbContext>(options =>
 
 builder.Services.AddRepositories();
 builder.Services.AddMappers();
+builder.Services.AddServices();
 
 //builder.Services.AddSerilogLogging(builder.Configuration);
 
@@ -40,6 +44,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.MapControllers();
 
 app.UseHttpsRedirection();
 

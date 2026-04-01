@@ -2,8 +2,8 @@
 using Enrolly.EduDictionary.Application.Database;
 using Enrolly.EduDictionary.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 using Enrolly.EduDictionary.Application.Mappings;
+using Enrolly.EduDictionary.Domain.Enums;
 
 namespace Enrolly.EduDictionary.Application.Repositories;
 
@@ -21,7 +21,10 @@ public class FacultyRepository : IFacultyRepository
     public async Task<List<FacultyDto>> GetFaculties()
     {
         return _mapper.ToDtos(
-            await _dbContext.Faculties.AsNoTracking().ToListAsync())
+            await _dbContext.Faculties
+                .Where(x => x.RelevanceStatus == RelevanceStatus.Active)
+                .AsNoTracking()
+                .ToListAsync())
             .ToList();
     }
 
@@ -29,6 +32,7 @@ public class FacultyRepository : IFacultyRepository
     {
         return _mapper.ToDto(
             await _dbContext.Faculties
+                .Where(x => x.RelevanceStatus == RelevanceStatus.Active)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(f =>
                     f.Id == id));

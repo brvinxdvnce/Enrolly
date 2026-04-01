@@ -11,7 +11,7 @@ public class EducationLevel
     {
         Id = id;
         Name = name;
-        ImportedAt = DateTime.Now;
+        ImportedAt = DateTime.UtcNow;
         RelevanceStatus = status;
     }
 

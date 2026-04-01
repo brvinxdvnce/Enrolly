@@ -4,7 +4,7 @@ namespace Enrolly.EduDictoinary.Domain.Entities;
 
 public class Faculty
 {
-    private Faculty () {}
+    public Faculty () {}
 
     public Faculty(
         Guid id,
@@ -16,6 +16,7 @@ public class Faculty
         Name = name;
         CreatedAt = createdAt;
         RelevanceStatus = status;
+        ImportedAt = DateTime.UtcNow;
     }
     
     public Guid Id { get; set; }

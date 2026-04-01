@@ -6,7 +6,7 @@ namespace DictionaryWorker.DTOs;
 public class DocumentTypeDto
 {
     public Guid Id { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreateTime { get; set; }
     public DateTime ImportedAt { get; set; }
     public string Name { get; set; } = "";
     public EducationLevel? EducationLevel { get; set; } = new EducationLevel();

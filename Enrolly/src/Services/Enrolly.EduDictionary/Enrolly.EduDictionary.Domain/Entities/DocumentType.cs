@@ -1,11 +1,10 @@
-﻿using Enrolly.EduDictionary.Domain.Entities;
-using Enrolly.EduDictionary.Domain.Enums;
+﻿using Enrolly.EduDictionary.Domain.Enums;
 
-namespace Enrolly.EduDictoinary.Domain.Entities;
+namespace Enrolly.EduDictionary.Domain.Entities;
 
 public class DocumentType
 {
-    private DocumentType() {}
+    public DocumentType() {}
 
     public DocumentType(
         Guid id,
@@ -19,7 +18,7 @@ public class DocumentType
         Id = id;
         Name = name;
         CreatedAt = createdAt;
-        ImportedAt = DateTime.Now;
+        ImportedAt = DateTime.UtcNow;
         EducationLevelId = educationLevelId;
         NextEducationLevelId = nexteducationLevelId;
         RelevanceStatus = status;

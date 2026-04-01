@@ -9,12 +9,16 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
         <PackageReference Include="Riok.Mapperly"/>
         <PackageReference Include="Microsoft.Extensions.Http" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Enrolly.Shared.Logging\Enrolly.Shared.Logging.csproj" />
       <ProjectReference Include="..\Enrolly.EduDictionary.Domain\Enrolly.EduDictionary.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="DTOs\" />
     </ItemGroup>
 </Project>

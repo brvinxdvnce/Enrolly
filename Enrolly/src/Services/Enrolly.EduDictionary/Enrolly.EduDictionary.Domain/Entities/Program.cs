@@ -5,7 +5,7 @@ namespace Enrolly.EduDictoinary.Domain.Entities;
 
 public class Program
 {
-    private Program () {}
+    public Program () {}
     
     public Program(
         Guid id,
@@ -21,7 +21,7 @@ public class Program
     {
         Id = id;
         CreatedAt =  createdAt;
-        ImportedAt = DateTime.Now;
+        ImportedAt = DateTime.UtcNow;
         RelevanceStatus = status;
         Name = name;
         Code = code;

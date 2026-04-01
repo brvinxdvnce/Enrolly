@@ -12,7 +12,9 @@ public class EducationLevelConfiguration : IEntityTypeConfiguration<EducationLev
         builder.ToTable("education_level");
         
         builder.HasKey(x => x.Id);
-
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever();
+        
         builder.Property(x => x.RelevanceStatus)
             .HasConversion<string>();
     }

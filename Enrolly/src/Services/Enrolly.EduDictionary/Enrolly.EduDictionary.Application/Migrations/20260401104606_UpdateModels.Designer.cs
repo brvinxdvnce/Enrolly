@@ -3,6 +3,7 @@ using System;
 using Enrolly.EduDictionary.Application.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Enrolly.EduDictionary.Application.Migrations
 {
     [DbContext(typeof(DictionaryDbContext))]
-    partial class DictionaryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260401104606_UpdateModels")]
+    partial class UpdateModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +28,10 @@ namespace Enrolly.EduDictionary.Application.Migrations
             modelBuilder.Entity("Enrolly.EduDictionary.Domain.Entities.EducationLevel", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("ImportedAt")
                         .HasColumnType("timestamp with time zone");
@@ -79,6 +85,7 @@ namespace Enrolly.EduDictionary.Application.Migrations
             modelBuilder.Entity("Enrolly.EduDictoinary.Domain.Entities.DocumentType", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -113,6 +120,7 @@ namespace Enrolly.EduDictionary.Application.Migrations
             modelBuilder.Entity("Enrolly.EduDictoinary.Domain.Entities.Faculty", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -137,6 +145,7 @@ namespace Enrolly.EduDictionary.Application.Migrations
             modelBuilder.Entity("Enrolly.EduDictoinary.Domain.Entities.Program", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Code")

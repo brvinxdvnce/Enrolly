@@ -1,4 +1,5 @@
-﻿using Enrolly.EduDictionary.Domain.Enums;
+﻿using Enrolly.EduDictionary.Domain.Entities;
+using Enrolly.EduDictionary.Domain.Enums;
 using Enrolly.EduDictoinary.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,6 +13,8 @@ public class DocumentTypeConfiguration : IEntityTypeConfiguration<DocumentType>
         builder.ToTable("document_type");
         
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id)
+            .ValueGeneratedNever();
 
         builder.HasOne(x => x.EducationLevel)
             .WithMany()

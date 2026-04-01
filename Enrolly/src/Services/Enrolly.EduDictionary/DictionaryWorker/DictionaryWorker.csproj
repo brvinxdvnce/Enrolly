@@ -16,7 +16,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Enrolly.Shared.Logging\Enrolly.Shared.Logging.csproj" />
       <ProjectReference Include="..\Enrolly.EduDictionary.Application\Enrolly.EduDictionary.Application.csproj" />
       <ProjectReference Include="..\Enrolly.EduDictionary.Domain\Enrolly.EduDictionary.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="DTOs\" />
     </ItemGroup>
 </Project>

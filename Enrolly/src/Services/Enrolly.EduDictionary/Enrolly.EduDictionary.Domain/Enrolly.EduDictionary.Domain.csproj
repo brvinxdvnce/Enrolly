@@ -7,4 +7,8 @@
     <RootNamespace>Enrolly.EduDictionary.Domain</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Enrolly.Shared.Logging\Enrolly.Shared.Logging.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -2,18 +2,18 @@
 
 public class ImportSummary
 {
-    private ImportSummary ( ) {}
+    public ImportSummary ( ) {}
 
     private ImportSummary(string collectionTypeName)
     {
         Id = Guid.NewGuid();
-        StartedAt = DateTime.Now;
+        StartedAt = DateTime.UtcNow;
         CollectionName = collectionTypeName;
     }
     
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string CollectionName { get; private set; }
-    public DateTime StartedAt { get; private set; } = DateTime.Now;
+    public DateTime StartedAt { get; private set; } = DateTime.UtcNow;
     public DateTime? CompletedAt { get; private set; }
     public int Received { get; set; } = 0;
     public int Added { get; set; } = 0;
@@ -27,7 +27,7 @@ public class ImportSummary
 
     public void StopImport()
     {
-        CompletedAt = DateTime.Now;
+        CompletedAt = DateTime.UtcNow;
     }
     
     public void AddStats((int received, int added, int updated, int deleted) res)

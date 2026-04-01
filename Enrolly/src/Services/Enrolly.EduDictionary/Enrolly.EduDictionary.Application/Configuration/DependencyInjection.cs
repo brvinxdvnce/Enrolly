@@ -2,6 +2,8 @@
 using System.Text;
 using Enrolly.EduDictionary.Application.Mappings;
 using Enrolly.EduDictionary.Application.Repositories;
+using Enrolly.EduDictionary.Application.Services.Implementations;
+using Enrolly.EduDictionary.Application.Services.Interfaces;
 using Enrolly.EduDictionary.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,22 +14,29 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddSingleton<IDocumentTypeRepository, DocumentTypeRepository>();
-        services.AddSingleton<IEducationLevelRepository, EducationLevelRepository>();
-        services.AddSingleton<IFacultyRepository, FacultyRepository>();
-        services.AddSingleton<IProgramRepository, ProgramRepository>();
+        services.AddScoped<IDocumentTypeRepository, DocumentTypeRepository>();
+        services.AddScoped<IEducationLevelRepository, EducationLevelRepository>();
+        services.AddScoped<IImportSummaryRepository, ImportSummaryRepository>();
+        services.AddScoped<IFacultyRepository, FacultyRepository>();
+        services.AddScoped<IProgramRepository, ProgramRepository>();
         return services;
     }
 
     public static IServiceCollection AddMappers(this IServiceCollection services)
     {
-        services.AddSingleton<DocumentTypeMapper>();
-        services.AddSingleton<EducationLevelMapper>();
-        services.AddSingleton<FacultyMapper>();
-        services.AddSingleton<ProgramMapper>();
+        services.AddScoped<DocumentTypeMapper>();
+        services.AddScoped<EducationLevelMapper>();
+        services.AddScoped<FacultyMapper>();
+        services.AddScoped<ProgramMapper>();
         return services;
     }
 
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IExternalDataCollector, ExternalDataCollector>();
+        return services;
+    }
+    
     /*public static IServiceCollection ConfigureHttpClient(
         this IServiceCollection services, 
         IConfiguration configuration)
