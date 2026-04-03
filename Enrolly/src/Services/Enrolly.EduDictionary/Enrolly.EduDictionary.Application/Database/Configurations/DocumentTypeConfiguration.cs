@@ -22,10 +22,9 @@ public class DocumentTypeConfiguration : IEntityTypeConfiguration<DocumentType>
             .OnDelete(DeleteBehavior.SetNull);
 
         builder
-            .HasOne(x => x.NextEducationLevel)
+            .HasMany(x => x.NextEducationLevels)
             .WithMany()
-            .HasForeignKey(x => x.NextEducationLevelId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .UsingEntity(i => i.ToTable("document_type_next_edu_level"));
 
         builder.Property(x => x.RelevanceStatus)
             .HasConversion<string>();

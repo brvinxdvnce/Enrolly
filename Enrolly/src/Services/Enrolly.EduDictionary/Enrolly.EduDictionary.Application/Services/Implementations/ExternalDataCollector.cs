@@ -2,6 +2,7 @@
 using DictionaryWorker.DTOs;
 using Enrolly.EduDictionary.Application.Database;
 using Enrolly.EduDictionary.Application.Services.Interfaces;
+using Enrolly.EduDictionary.Domain.DTOs;
 using Enrolly.EduDictionary.Domain.Entities;
 using Enrolly.EduDictionary.Domain.Enums;
 using Enrolly.EduDictoinary.Domain.Entities;
@@ -233,56 +234,76 @@ public class ExternalDataCollector : IExternalDataCollector
         
         if (remoteData == null) return (0, 0, 0, 0);
 
-        var localData = 
+        var localDocTypes = 
             await dbContext.DocumentTypes
+                .Include(d => d.NextEducationLevels)
                 .ToListAsync(cancellationToken);
        
+        var localEducationLevelsMap = 
+            await dbContext.EducationLevels
+                .ToDictionaryAsync(e => e.Id, cancellationToken);
+        
         int receivedCount = remoteData.Count,
             addedCount = 0,
             updatedCount = 0,
             deletedCount = 0;
         
-        var localMap = localData.ToDictionary(x => x.Id);
-
+        var localDocTypesMap = localDocTypes.ToDictionary(x => x.Id);
+        
         foreach (var item in remoteData)
         {
-            if (localMap.TryGetValue(item.Id, out var local))
+            if (localDocTypesMap.TryGetValue(item.Id, out var local))
             {
+                bool eduLevelsChanged = 
+                    !local.NextEducationLevels
+                        .Select(n => n.Id)
+                        .OrderBy(id => id)
+                        .SequenceEqual(
+                            item?.NextEducationLevels
+                                .Select(n => n.Id)
+                                .OrderBy(id => id));
+                
                 var remoteEduId = item.EducationLevel?.Id ?? 0;
-                var remoteNextId = item.NextEducationLevel?.Id ?? 0;
                 
                 if (local.RelevanceStatus != RelevanceStatus.Active
                     || local.Name != item.Name
-                    || local.CreatedAt != item.CreateTime.ToUtc()
+                    || !DateChecker.IsSame(local.CreatedAt, item.CreateTime.ToUtc())
                     || local.EducationLevelId != remoteEduId
-                    || local.NextEducationLevelId != remoteNextId)
+                    || eduLevelsChanged)
                 {
                     local.Name = item.Name;
                     local.CreatedAt = item.CreateTime.ToUtc();
                     local.EducationLevelId = remoteEduId;
-                    local.NextEducationLevelId = remoteNextId;
                     local.RelevanceStatus = RelevanceStatus.Active;
+                    
+                    local.NextEducationLevels.Clear();
+                    foreach(var i in item?.NextEducationLevels?.Select(e => e.Id) ?? [])
+                        local.NextEducationLevels.Add(localEducationLevelsMap.GetValueOrDefault(i));
+                    
                     ++updatedCount;
                 }
 
-                localMap.Remove(item.Id);
+                localDocTypesMap.Remove(item.Id);
             }
             else
             {
-                await dbContext.DocumentTypes.AddAsync(
-                    new DocumentType(
-                        item.Id, 
-                        item.Name,
-                        item.CreateTime.ToUtc(),
-                        item.EducationLevel?.Id ?? 0, 
-                        item.NextEducationLevel?.Id ?? 0,
-                        RelevanceStatus.Active),
-                    cancellationToken);
+                var newDocType = new DocumentType(
+                    item.Id,
+                    item.Name,
+                    item.CreateTime.ToUtc(),
+                    item.EducationLevel?.Id ?? 0,
+                    RelevanceStatus.Active);
+                
+                foreach(var i in item?.NextEducationLevels?.Select(e => e.Id) ?? [])
+                    newDocType.NextEducationLevels.Add(localEducationLevelsMap.GetValueOrDefault(i));
+                
+                await dbContext.DocumentTypes.AddAsync(newDocType, cancellationToken);
+                
                 ++addedCount;
             }
         }
 
-        foreach (var item in localMap.Values)
+        foreach (var item in localDocTypesMap.Values)
         {
             item.RelevanceStatus = RelevanceStatus.Deleted;
             ++deletedCount;
@@ -318,7 +339,7 @@ public class ExternalDataCollector : IExternalDataCollector
             if (localMap.TryGetValue(item.Id, out var local))
             {
                 if (local.Name != item.Name 
-                    || local.CreatedAt != item.CreateTime.ToUtc()
+                    || !DateChecker.IsSame(local.CreatedAt, item.CreateTime.ToUtc())
                     || local.RelevanceStatus != RelevanceStatus.Active)
                 {
                     local.Name = item.Name;
@@ -388,7 +409,7 @@ public class ExternalDataCollector : IExternalDataCollector
                         || local.Code != item.Code
                         || local.Language != item.Language
                         || local.EducationForm != item.EducationForm
-                        || local.CreatedAt != item.CreateTime.ToUtc()
+                        || !DateChecker.IsSame(local.CreatedAt, item.CreateTime.ToUtc())
                         || local.FacultyId != remoteFacultyId
                         || local.EducationLevelId != remoteEducationLevelId
                         || local.RelevanceStatus != RelevanceStatus.Active)

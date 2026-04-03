@@ -11,7 +11,6 @@ public class DocumentType
         string name, 
         DateTime createdAt,
         int educationLevelId,
-        int nexteducationLevelId,
         RelevanceStatus status = RelevanceStatus.Active
         )
     {
@@ -20,7 +19,7 @@ public class DocumentType
         CreatedAt = createdAt;
         ImportedAt = DateTime.UtcNow;
         EducationLevelId = educationLevelId;
-        NextEducationLevelId = nexteducationLevelId;
+        NextEducationLevels = new List<EducationLevel>();
         RelevanceStatus = status;
     }
     
@@ -31,7 +30,6 @@ public class DocumentType
     public RelevanceStatus RelevanceStatus { get; set; }
     
     public int EducationLevelId { get; set; }
-    public int NextEducationLevelId { get; set; }
     public EducationLevel? EducationLevel { get; set; }
-    public EducationLevel? NextEducationLevel { get; set; }
+    public ICollection<EducationLevel?> NextEducationLevels { get; set; }
 }

@@ -24,7 +24,7 @@ public class ImportSummaryRepository : IImportSummaryRepository
         if (to.HasValue)
             query = query.Where(i => i.CompletedAt <= to);
 
-        return await query.ToListAsync();
+        return await query.OrderByDescending(i => i.CompletedAt).ToListAsync();
     }
 
     public async Task<List<ImportSummary>> GetLastImportAsync()

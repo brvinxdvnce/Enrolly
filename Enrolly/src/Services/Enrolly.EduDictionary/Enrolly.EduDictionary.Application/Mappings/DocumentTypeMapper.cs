@@ -1,4 +1,5 @@
 ﻿using DictionaryWorker.DTOs;
+using Enrolly.EduDictionary.Domain.DTOs;
 using Enrolly.EduDictionary.Domain.Entities;
 using Enrolly.EduDictoinary.Domain.Entities;
 using Riok.Mapperly.Abstractions;
@@ -14,9 +15,14 @@ public partial class DocumentTypeMapper
     public partial IEnumerable<DocumentTypeDto> ToDtos(IEnumerable<DocumentType>? models);
     
     [MapProperty("EducationLevel.Id", "EducationLevelId")]
-    [MapProperty("NextEducationLevel.Id", "NextEducationLevelId")]
-    
     [MapProperty(nameof(DocumentTypeDto.CreateTime), nameof(DocumentType.CreatedAt))]
     public partial DocumentType FromDto(DocumentTypeDto? dto);
     public partial IEnumerable<DocumentType> FromDtos(IEnumerable<DocumentTypeDto> dtos);
+
+
+    private partial EducationLevelDto ToDto(EducationLevel? model);
+    private partial IEnumerable<EducationLevelDto> ToDtos(IEnumerable<EducationLevel>? models);
+    
+    private partial EducationLevel FromDto(EducationLevelDto? dto);
+    private partial IEnumerable<EducationLevel> FromDtos(IEnumerable<EducationLevelDto> dtos);
 }

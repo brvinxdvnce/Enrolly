@@ -1,4 +1,5 @@
 ﻿using DictionaryWorker.DTOs;
+using Enrolly.EduDictionary.Domain.DTOs;
 
 namespace Enrolly.EduDictionary.Domain.Repositories;
 

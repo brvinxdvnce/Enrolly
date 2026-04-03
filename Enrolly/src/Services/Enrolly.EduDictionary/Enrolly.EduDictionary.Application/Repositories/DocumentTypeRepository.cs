@@ -1,6 +1,7 @@
 ﻿using DictionaryWorker.DTOs;
 using Enrolly.EduDictionary.Application.Database;
 using Enrolly.EduDictionary.Application.Mappings;
+using Enrolly.EduDictionary.Domain.DTOs;
 using Enrolly.EduDictionary.Domain.Enums;
 using Enrolly.EduDictionary.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,8 @@ public class DocumentTypeRepository : IDocumentTypeRepository
         return _mapper.ToDtos(
                 await _dbContext
                     .DocumentTypes
+                    .Include(d => d.EducationLevel)
+                    .Include(d => d.NextEducationLevels)
                     .Where(x => x.RelevanceStatus == RelevanceStatus.Active)
                     .AsNoTracking()
                     .ToListAsync())

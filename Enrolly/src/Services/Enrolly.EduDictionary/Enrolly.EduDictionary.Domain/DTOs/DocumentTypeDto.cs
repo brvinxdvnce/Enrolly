@@ -1,14 +1,12 @@
-﻿using Enrolly.EduDictionary.Domain.Entities;
-using Enrolly.EduDictoinary.Domain.Entities;
+﻿using DictionaryWorker.DTOs;
 
-namespace DictionaryWorker.DTOs;
+namespace Enrolly.EduDictionary.Domain.DTOs;
 
 public class DocumentTypeDto
 {
     public Guid Id { get; set; }
     public DateTime CreateTime { get; set; }
-    public DateTime ImportedAt { get; set; }
     public string Name { get; set; } = "";
-    public EducationLevel? EducationLevel { get; set; } = new EducationLevel();
-    public EducationLevel? NextEducationLevel { get; set; } =  new EducationLevel();
+    public EducationLevelDto? EducationLevel { get; set; } = new EducationLevelDto();
+    public ICollection<EducationLevelDto>? NextEducationLevels { get; set; }
 }
