@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+      <PackageReference Include="Minio" />
+      <PackageReference Include="MassTransit" />
+      <PackageReference Include="MassTransit.RabbitMQ" />
+      <PackageReference Include="MassTransit.EntityFrameworkCore"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Enrolly.Contracts\Enrolly.Contracts.csproj" />
+      <ProjectReference Include="..\..\..\Shared\Enrolly.Shared\Enrolly.Shared.csproj" />
+      <ProjectReference Include="..\Enrolly.Documents.Application\Enrolly.Documents.Application.csproj" />
+      <ProjectReference Include="..\Enrolly.Documents.Domain\Enrolly.Documents.Domain.csproj" />
+    </ItemGroup>
+
+</Project>
