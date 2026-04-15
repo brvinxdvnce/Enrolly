@@ -8,6 +8,13 @@ public class ManagerConfiguration : IEntityTypeConfiguration<Manager>
 {
     public void Configure(EntityTypeBuilder<Manager> builder)
     {
-        throw new NotImplementedException();
+        builder.HasKey(m => m.Id);
+        
+        builder.HasOne(a => a.Account)
+            .WithOne(u => u.ManagerProfile)
+            .HasForeignKey<Manager>(m => m.Id);
+
+        builder.Property(m => m.Grade)
+            .HasConversion<string>();
     }
 }

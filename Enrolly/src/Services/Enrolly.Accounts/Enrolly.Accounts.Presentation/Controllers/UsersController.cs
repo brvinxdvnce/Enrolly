@@ -1,42 +1,46 @@
-﻿/*using Microsoft.AspNetCore.Mvc;
+﻿using Enrolly.Accounts.Application.DTOs;
+using Enrolly.Accounts.Application.Services.Interfaces;
+using Enrolly.Accounts.Domain.Entities;
+using Enrolly.Accounts.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Accounts.Presentation.Controllers;
 
-[Route("api/v1/users")]
 [ApiController]
+[Route("api/v1/users")]
 public class UsersController : ControllerBase
 {
-    [HttpGet]
-    [Route("{id:guid}")]
-    [Route("me")]
+    private readonly IUserProfileService _profileService;
+    private readonly UserManager<User> _userManager;
+    
+    public UsersController(UserManager<User> userManager, IUserProfileService profileService)
+    {
+        _userManager = userManager;
+        _profileService = profileService;
+    }
+
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUser(
-        [FromRoute] Guid? id)
+        [FromRoute] Guid id)
     {
-        return Ok();
+        return Ok(await _profileService.GetUserAsync(id));
     }
     
-    [HttpPatch]
-    [Route("{id:guid}")]
-    [Route("me")]
-    public async Task<IActionResult> ChangeUserInfo(
-        [FromRoute] Guid? id)
+    [HttpPatch("{id:guid}")]
+    public async Task<IActionResult> UpdateInfo(
+        [FromRoute] Guid id,
+        [FromBody] UpdateUserDto updateUser)
     {
-        return Ok();
+        await _profileService.UpdateUserAsync(id, updateUser);
+        return NoContent();
     }
-
-}*/
-
-
-using Microsoft.AspNetCore.Mvc;
-
-[ApiController]
-[Route("api/v1/users")]
-public class UsersController : ControllerBase
-{
-        
     
-    public async Task<IActionResult> UpgradeRole()
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteAccount(
+        [FromRoute] Guid id)
     {
-        return Ok();
+        await _profileService.DeleteUserAsync(id);
+        return NoContent();
     }
 }

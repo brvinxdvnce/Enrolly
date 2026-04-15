@@ -12,10 +12,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasOne(u => u.ApplicantProfile)
             .WithOne(a => a.Account)
-            .HasForeignKey<Applicant>(a => a.Id);
+            .HasForeignKey<Applicant>(a => a.Id)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(u => u.ManagerProfile)
             .WithOne(a => a.Account)
-            .HasForeignKey<Manager>(a => a.Id);
+            .HasForeignKey<Manager>(a => a.Id)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -7,10 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Enrolly.Accounts.Application\Enrolly.Accounts.Application.csproj" />
         <ProjectReference Include="..\Enrolly.Accounts.Domain\Enrolly.Accounts.Domain.csproj" />
         
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+        
+        <PackageReference Include="MassTransit" />
+        <PackageReference Include="MassTransit.RabbitMQ"/>
+        <PackageReference Include="MassTransit.EntityFrameworkCore"/>
     </ItemGroup>
 
 </Project>

@@ -8,6 +8,10 @@ public class ApplicantConfiguration : IEntityTypeConfiguration<Applicant>
 {
     public void Configure(EntityTypeBuilder<Applicant> builder)
     {
-        throw new NotImplementedException();
+        builder.HasKey(a => a.Id);
+
+        builder.HasOne(a => a.Account)
+            .WithOne(u => u.ApplicantProfile)
+            .HasForeignKey<Applicant>(a => a.Id);
     }
 }

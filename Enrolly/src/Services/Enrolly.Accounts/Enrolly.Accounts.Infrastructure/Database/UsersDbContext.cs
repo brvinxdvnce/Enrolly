@@ -1,5 +1,9 @@
-﻿using Enrolly.Accounts.Domain.Entities;
+﻿using System.Text.Json;
+using Enrolly.Accounts.Domain.Entities;
 using Enrolly.Accounts.Infrastructure.Database.Configurations;
+using Enrolly.Contracts.Events.Abstractions;
+using MassTransit;
+using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,10 +24,61 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options) :
         modelBuilder.ApplyConfiguration(new ApplicantConfiguration());
         modelBuilder.ApplyConfiguration(new ManagerConfiguration());
         
-        SeedAdmin(modelBuilder);
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
+        
+        //SeedAdmin(modelBuilder);
     }
 
-    private void SeedAdmin(ModelBuilder modelBuilder)
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    {
+        var entitiesWithEvents = ChangeTracker.Entries<DomainEntity>()
+            .Select(e => e.Entity)
+            .Where(e => e.Events.Any())
+            .ToList();
+        
+        if (entitiesWithEvents.Any())
+        {
+            var outboxState = new OutboxState
+            {
+                OutboxId = Guid.NewGuid(),
+                LockId = Guid.NewGuid(),
+                Created = DateTime.UtcNow
+            };
+            await Set<OutboxState>().AddAsync(outboxState, cancellationToken);
+            
+            var newOutboxMessages =
+                entitiesWithEvents
+                    .SelectMany(e => e.Events)
+                    .Select(e => new OutboxMessage()
+                    {
+                        MessageId = Guid.NewGuid(),
+                        MessageType = e.GetType().FullName,
+                        ContentType = "application/json",
+                        Body = JsonSerializer.Serialize(e, e.GetType()),
+                        SentTime = default(DateTime),
+                        EnqueueTime = null,
+                        OutboxId = outboxState.OutboxId,
+                        
+                    })
+                    .ToList();
+
+            if (newOutboxMessages.Any())
+            {
+                await Set<OutboxMessage>().AddRangeAsync(newOutboxMessages, cancellationToken);
+            }
+        }
+
+        int result = await base.SaveChangesAsync(cancellationToken);
+
+        foreach (var entity in entitiesWithEvents)
+            entity.ClearEvents();
+        
+        return result;
+    }
+
+    /*private void SeedAdmin(ModelBuilder modelBuilder)
     {
         var adminId = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var adminRoleId = Guid.Parse("22222222-2222-2222-2222-222222222222");
@@ -59,5 +114,5 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options) :
                 RoleId = adminRoleId, 
                 UserId = adminId
             });
-    }
+    }*/
 }

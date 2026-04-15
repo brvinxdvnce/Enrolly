@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Enrolly.Accounts.Presentation</RootNamespace>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,10 +16,21 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
         
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt"/>
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Enrolly.Shared\Enrolly.Shared.csproj" />
+      <ProjectReference Include="..\Enrolly.Accounts.Application\Enrolly.Accounts.Application.csproj" />
       <ProjectReference Include="..\Enrolly.Accounts.Infrastructure\Enrolly.Accounts.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

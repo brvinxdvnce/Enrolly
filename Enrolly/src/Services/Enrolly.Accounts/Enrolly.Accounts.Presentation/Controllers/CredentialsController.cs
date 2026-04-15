@@ -1,4 +1,6 @@
-﻿/*using Microsoft.AspNetCore.Mvc;
+﻿using Enrolly.Accounts.Application.Services.Interfaces;
+using Enrolly.Accounts.Presentation.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Accounts.Presentation.Controllers;
 
@@ -6,15 +8,26 @@ namespace Enrolly.Accounts.Presentation.Controllers;
 [ApiController]
 public class CredentialsController : ControllerBase
 {
-    [HttpPatch("password")]
-    public async Task<IActionResult> ChangePassword()
+    private readonly ICredentialsService _credentialsService;
+
+    public CredentialsController(ICredentialsService credentialsService)
     {
-        return Ok();
+        _credentialsService = credentialsService;
+    }
+
+    [HttpPatch("password")]
+    public async Task<IActionResult> ChangePassword(
+        [FromBody] ChangePasswordRequestDto requestDto)
+    {
+        await _credentialsService.ResetPassword(requestDto);
+        return NoContent();
     }
     
     [HttpPatch("email")]
-    public async Task<IActionResult> ChangeEmail()
+    public async Task<IActionResult> ChangeEmail(
+        [FromBody] ChangeEmailRequestDto requestDto)
     {
-        return Ok();
+        await _credentialsService.ResetEmail(requestDto);
+        return NoContent();
     }
-}*/
+}
