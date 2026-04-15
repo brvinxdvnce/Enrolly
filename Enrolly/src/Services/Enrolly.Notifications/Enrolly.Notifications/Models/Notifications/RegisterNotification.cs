@@ -4,5 +4,5 @@ public class RegisterNotification(string email, string userName) : IEmailNotific
 {
     public string To => email;
     public string Subject => "";
-    public string Body => "";
+    public string Body => $"{userName} has been registered, out congratulation!";
 }

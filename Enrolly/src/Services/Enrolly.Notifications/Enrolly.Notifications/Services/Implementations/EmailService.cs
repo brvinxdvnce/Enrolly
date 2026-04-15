@@ -10,10 +10,12 @@ namespace Enrolly.Notifications.Services.Implementations;
 
 public class EmailService : IMailService
 {
+    private readonly ILogger<EmailService> _logger;
     private readonly SmtpSettings _smtpSettings;
     
-    public EmailService(IOptions<SmtpSettings> smtpSettings)
+    public EmailService(IOptions<SmtpSettings> smtpSettings, ILogger<EmailService> logger)
     {
+        _logger = logger;
         _smtpSettings = smtpSettings.Value;
     }
     
@@ -46,10 +48,12 @@ public class EmailService : IMailService
             await smtpClient.SendAsync(message);
                 
             await smtpClient.DisconnectAsync(true);
+            
+            _logger.LogInformation($"Sent email to {notify.To}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError("Error while sending email: {message}, full error: {full}", ex.Message, ex);
         }
     }
 }

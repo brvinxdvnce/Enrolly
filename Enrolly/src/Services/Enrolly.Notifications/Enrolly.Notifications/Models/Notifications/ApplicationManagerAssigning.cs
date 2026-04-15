@@ -1,8 +1,0 @@
-﻿namespace Enrolly.Notifications.Models.Notifications;
-
-public class ApplicationManagerAssigning(string email, string userName) : IEmailNotification
-{
-    public string To => email;
-    public string Subject => "";
-    public string Body => "";
-}
