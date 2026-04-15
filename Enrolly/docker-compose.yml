@@ -1,0 +1,45 @@
+services:
+  rabbit:
+    image: rabbitmq:4.2-alpine
+    #rabbitmq:4.2-management - UI
+  
+  minio:
+    image: minio/minio:latest
+  
+  postgresql:
+    image: postgres:15-alpine
+  
+  enrolly-api-gw:
+    ports:
+      - 
+  
+  enrolly-accounts:
+    depends_on:
+      - postgresql
+    ports:
+      - 
+
+  enrolly-admissions:
+    depends_on:
+      - postgresql
+  
+  enrolly-documents:
+    depends_on:
+      - minio
+      - postgresql
+  
+  enrolly-edu-dictionary:
+    depends_on:
+      - postgresql
+  
+  enrolly-notifications:
+    depends_on:
+      - postgresql
+  
+  enrolly-admin-client:
+    depends_on:
+      - enrolly-edu-dictionary
+      - enrolly-admissions
+      - enrolly-documents
+      - enrolly-accounts
+    

@@ -1,6 +1,8 @@
-﻿namespace Enrolly.Contracts.Events.Events;
+﻿using Enrolly.Contracts.Events.Abstractions;
 
-public class ManagerRegisteredEvent
-{
-    
-}
+namespace Enrolly.Contracts.Events.Events;
+
+public record ManagerRegisteredEvent(
+    Guid ManagerId,
+    string ManagerEmail,
+    string ManagerName) : IEvent;

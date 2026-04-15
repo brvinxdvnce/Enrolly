@@ -62,6 +62,18 @@
 
 [Доступ: <kbd>Admin</kbd> <kbd>Gen.Manager</kbd> <kbd>Manager</kbd> ] - доступ к эндпоинту ограничен на основании роли пользователя в системе. <kbd>Все</kbd> - означает, что любой пользователь, прошедшйи аутентификацию/авторизацию, имеет доступ к ресурсу. Тегом не учитываются ограничения бизнес логики и доступа к чужим ресурсам.
 
+
+## API Спецификация сервисов:
+- [Enrolly.Accounts (сервис аутентификации и управления аккаунтами)](Enrolly/src/Services/Enrolly.Accounts/Enrolly.Accounts.README.md)
+
+- [Enrolly.Documents (сервис управления документами и их сканами: паспорта, документы об образовании)](Enrolly/src/Services/Enrolly.Documents/Enrolly.Documents.README.md)
+
+- [Enrolly.Admissions (сервис, отвечающий за приведение приемной кампании: создание заявок, выбор программ, факультетов)](Enrolly/src/Services/Enrolly.Admissions/Enrolly.Admissions.README.md)
+
+- [Enrolly.EduDictionary (сервис справочник, хранящий актуальную информацию в всех факультетах, программах, доступных документах и уровнях образования)](Enrolly/src/Services/Enrolly.EduDictionary/Enrolly.EduDictionary.README.md)
+
+- [Enrolly.ApiGateway (wip)]()
+
 ## Функционал клиента (абитуриента)
 
 ### 1. Возможность регистрации в системе:

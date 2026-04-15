@@ -4,6 +4,8 @@ namespace Enrolly.Admissions.Domain.Entities;
 
 public class User
 {
+    public User() {}
+    
     public Guid Id { get; private set; }
     public Role Role { get; set; }
     public List<Document> Documents { get; set; }

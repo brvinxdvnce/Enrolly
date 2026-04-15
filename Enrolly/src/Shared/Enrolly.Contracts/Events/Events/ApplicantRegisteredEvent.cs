@@ -3,7 +3,7 @@
 namespace Enrolly.Contracts.Events;
 
 public record ApplicantRegisteredEvent(
-    Guid UserId,
-    string FullName,
+    Guid ApplicantId,
+    string ApplicantName,
     string Email
     ) : IEvent;
