@@ -2,12 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Enrolly.Admissions.Application.Configurations;
+namespace Enrolly.Admissions.Infrastructure.Database.Configurations;
 
 public class AdmissionConfiguration : IEntityTypeConfiguration<Admission>
 {
     public void Configure(EntityTypeBuilder<Admission> builder)
     {
-        throw new NotImplementedException();
+        builder.ToTable("admission");
+        
+        builder.HasKey(a => a.Id);
     }
 }

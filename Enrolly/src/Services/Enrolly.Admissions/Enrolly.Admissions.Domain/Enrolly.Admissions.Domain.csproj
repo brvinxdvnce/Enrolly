@@ -5,9 +5,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+    
   <ItemGroup>
-    <Folder Include="Repositories\" />
+      <PackageReference Include="CSharpFunctionalExtensions"/>
   </ItemGroup>
-
+    
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Enrolly.Shared\Enrolly.Shared.csproj" />
+  </ItemGroup>
+    
 </Project>

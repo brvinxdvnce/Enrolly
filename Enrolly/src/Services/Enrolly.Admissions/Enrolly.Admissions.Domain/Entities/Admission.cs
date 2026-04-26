@@ -5,13 +5,22 @@ namespace Enrolly.Admissions.Domain.Entities;
 public class Admission
 {
     public Admission () {}
+
+    public Admission(Guid applicantId)
+    {
+        Id = Guid.NewGuid();
+        ApplicantId = applicantId;
+        AdmissionStatus = AdmissionStatus.Created;
+        LastUpdateTime = DateTime.UtcNow;
+    }
     
     public Guid Id { get; private set; }
-    public Guid UserId { get; set; }
+    public Guid ApplicantId { get; set; }
     public Guid? ManagerId { get; set; }
     public AdmissionStatus AdmissionStatus { get; set; }
-    public List<AdmissionProgram>? Programs { get; set; }
+    public List<AdmissionProgram> Programs { get; set; } = new List<AdmissionProgram>();
+    public DateTime CreatedAt { get; set; } =  DateTime.UtcNow;
+    public DateTime LastUpdateTime { get; set; }
     
-    public User? User { get; set; }
-    public User? Manager { get; set; }
+    public Applicant? Applicant { get; set; }
 }
