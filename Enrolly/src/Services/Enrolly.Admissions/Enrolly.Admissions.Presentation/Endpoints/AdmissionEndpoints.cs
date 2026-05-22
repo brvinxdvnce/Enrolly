@@ -70,10 +70,9 @@ public static class AdmissionEndpoints
 
     private static async Task<IResult> CreateAdmission(
         [FromRoute] Guid applicantId,
-        [FromServices] IAdmissionService admissionService,
-        [FromBody] AdmissionCreateDto newAdmission)
+        [FromServices] IAdmissionService admissionService)
     {
-        var result = await admissionService.CreateAdmission(newAdmission);
+        var result = await admissionService.CreateAdmission(applicantId);
         return result.ToActionResult();
     }
     

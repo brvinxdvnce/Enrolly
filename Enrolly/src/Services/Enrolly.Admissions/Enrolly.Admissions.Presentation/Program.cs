@@ -3,6 +3,7 @@ using Enrolly.Admissions.Application.DependencyInjection;
 using Enrolly.Admissions.Application.Settings;
 using Enrolly.Admissions.Infrastructure.Database;
 using Enrolly.Admissions.Infrastructure.DependencyInjection;
+using Enrolly.Admissions.Infrastructure.Workers;
 using Enrolly.Admissions.Presentation.DependencyInjection;
 using Enrolly.Admissions.Presentation.Extensions;
 using Enrolly.Auth.Authentication;
@@ -18,6 +19,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DbConnection");
 builder.AddObservability();
+
+/*builder.Services.AddHttpClient("DictionaryClient", client =>
+{
+    client.BaseAddress = new Uri(
+        builder.Configuration["DictionaryService:BaseUrl"]
+        ?? "http://localhost:5075");
+ 
+    client.Timeout = TimeSpan.FromSeconds(30);
+});*/
+ 
+builder.Services.AddHostedService<DictionarySyncWorker>();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.Configure<AdmissionSettings>(builder.Configuration.GetSection("AdmissionSettings"));

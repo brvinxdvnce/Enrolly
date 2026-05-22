@@ -21,8 +21,8 @@ public class OwnerOrManagerAdmissionEditHandler : AuthorizationHandler<OwnerOrMa
         OwnerOrManagerRequirement requirement,
         Guid admissionId)
     {
-        var actorIdClaim = context.User.Claims
-            .FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        var actorIdClaim = context.User
+            .FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!Guid.TryParse(actorIdClaim, out var actorId))
             return;

@@ -1,4 +1,5 @@
-﻿using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.EducationLevel;
+﻿using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.EducationDocumentTypes;
+using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.EducationLevel;
 using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.Faculty;
 using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.Program;
 using Enrolly.Admissions.Infrastructure.Consumers.Documents;
@@ -26,6 +27,10 @@ public static class ReceiveEndpointConfigurationExtensions
             e.ConfigureConsumer<FacultyCreatedConsumer>(context);
             e.ConfigureConsumer<FacultyUpdatedConsumer>(context);
             e.ConfigureConsumer<FacultyDeletedConsumer>(context);
+            
+            e.ConfigureConsumer<EducationDocumentTypeDeletedConsumer>(context);
+            e.ConfigureConsumer<EducationDocumentTypeImportedConsumer>(context);
+            e.ConfigureConsumer<EducationDocumentTypeUpdatedConsumer>(context);
         });
         
         configurator.ReceiveEndpoint("Admissions.DocumentEvents", e =>

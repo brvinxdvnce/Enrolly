@@ -7,19 +7,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Enrolly.Admissions.Infrastructure.Repositories;
 
-public class DocumentRepository : IDocumentRepository
+public class EducationDocumentRepository : IDocumentRepository
 {
     private readonly AdmissionsDbContext _dbContext;
 
-    public DocumentRepository(AdmissionsDbContext dbContext)
+    public EducationDocumentRepository(AdmissionsDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<Result> AddAsync(Document document)
+    public async Task<Result> AddAsync(EducationDocument document)
     {
         var applicant = await _dbContext.Applicants
-            .FirstOrDefaultAsync(a => a.Id == document.ApplicantId);
+            .FirstOrDefaultAsync(a => a.Id == document.UserId);
         
         return await Result.SuccessIf(applicant is not null, applicant!, 
             ResultError.NotFound("Applicant not found"))
@@ -31,7 +31,7 @@ public class DocumentRepository : IDocumentRepository
     public async Task<Result> DeleteAsync(Guid documentId)
     {
         var documentInDb = await _dbContext.Documents
-            .FirstOrDefaultAsync(d => d.Id == documentId);
+            .FirstOrDefaultAsync(d => d.DocumentId == documentId);
 
         return await Result.SuccessIf(documentInDb is not null, documentInDb!,
                 ResultError.NotFound("Document not found"))

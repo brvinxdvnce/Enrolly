@@ -1,4 +1,5 @@
 ﻿using Enrolly.Admissions.Infrastructure.Consumers;
+using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.EducationDocumentTypes;
 using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.EducationLevel;
 using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.Faculty;
 using Enrolly.Admissions.Infrastructure.Consumers.Dictionary.Program;
@@ -24,6 +25,10 @@ public static class ConsumerRegisterExtension
         configurator.AddConsumer<FacultyCreatedConsumer>();
         configurator.AddConsumer<FacultyUpdatedConsumer>();
         configurator.AddConsumer<FacultyDeletedConsumer>();
+        
+        configurator.AddConsumer<EducationDocumentTypeDeletedConsumer>();
+        configurator.AddConsumer<EducationDocumentTypeImportedConsumer>();
+        configurator.AddConsumer<EducationDocumentTypeUpdatedConsumer>();
         
         configurator.AddConsumer<DocumentUploadedConsumer>();
         configurator.AddConsumer<DocumentDeletedConsumer>();

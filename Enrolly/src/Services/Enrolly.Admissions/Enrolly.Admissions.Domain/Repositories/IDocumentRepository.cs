@@ -5,6 +5,6 @@ namespace Enrolly.Admissions.Domain.Repositories;
 
 public interface IDocumentRepository
 {
-    public Task<Result> AddAsync(Document document);
+    public Task<Result> AddAsync(EducationDocument document);
     public Task<Result> DeleteAsync(Guid documentId);
 }

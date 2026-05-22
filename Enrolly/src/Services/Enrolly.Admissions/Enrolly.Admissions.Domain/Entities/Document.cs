@@ -1,8 +1,8 @@
-﻿namespace Enrolly.Admissions.Domain.Entities;
+﻿/*namespace Enrolly.Admissions.Domain.Entities;
 
-public class Document
+public class DocumentType
 {
-    public Document() {}
+    public DocumentType() {}
     
     public Guid Id { get; set; }
     public Guid ApplicantId { get; set; }
@@ -10,4 +10,4 @@ public class Document
     public string Name { get; set; } = "";
     public EducationLevel? EducationLevel { get; set; } = new EducationLevel();
     public ICollection<EducationLevel>? NextEducationLevels { get; set; }
-}
+}*/

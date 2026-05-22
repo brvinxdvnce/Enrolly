@@ -14,11 +14,12 @@ public class AdmissionsDbContext(DbContextOptions<AdmissionsDbContext> options)
     public DbSet<Admission> Admissions  { get; set; }
     public DbSet<AdmissionProgram> AdmissionPrograms { get; set; }
     
-    public DbSet<Document> Documents { get; set; }
+    public DbSet<EducationDocument> Documents { get; set; }
     
     public DbSet<Program> Programs { get; set; }
     public DbSet<Faculty> Faculties { get; set; }
-    public DbSet<EducationLevel>  EducationLevels { get; set; }
+    public DbSet<EducationLevel> EducationLevels { get; set; }
+    public DbSet<EducationDocumentType> DocumentTypes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,11 +31,12 @@ public class AdmissionsDbContext(DbContextOptions<AdmissionsDbContext> options)
         modelBuilder.ApplyConfiguration(new AdmissionConfiguration());
         modelBuilder.ApplyConfiguration(new AdmissionProgramConfiguration());
         
-        modelBuilder.ApplyConfiguration(new DocumentConfiguration());
+        modelBuilder.ApplyConfiguration(new EducationDocumentConfiguration());
         
         modelBuilder.ApplyConfiguration(new ProgramConfiguration());
         modelBuilder.ApplyConfiguration(new FacultyConfiguration());
         modelBuilder.ApplyConfiguration(new EducationLevelConfiguration());
+        modelBuilder.ApplyConfiguration(new EducationDocumentTypeConfiguration());
         
         modelBuilder.AddInboxStateEntity();
         modelBuilder.AddOutboxMessageEntity();

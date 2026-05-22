@@ -12,11 +12,13 @@ public static class RegisterRepositoriesExtension
         services.AddScoped<IAdmissionProgramRepository, AdmissionProgramRepository>();
         services.AddScoped<IAdmissionRepository,AdmissionRepository>();
         services.AddScoped<IApplicantRepository,ApplicantRepository>();
-        services.AddScoped<IDocumentRepository,DocumentRepository>();
-        services.AddScoped<IEducationLevelRepository,EducationLevelRepository>();
-        services.AddScoped<IFacultyRepository,FacultyRepository>();
+        services.AddScoped<IDocumentRepository, EducationDocumentRepository>();
         services.AddScoped<IManagerRepository,ManagerRepository>();
-        services.AddScoped<IProgramRepository,ProgramRepository>();
+        
+        services.AddScoped<IEducationDocumentTypeRepository, EducationDocumentTypeRepository>();
+        services.AddScoped<IEducationLevelRepository, EducationLevelRepository>();
+        services.AddScoped<IFacultyRepository, FacultyRepository>();
+        services.AddScoped<IProgramRepository, ProgramRepository>();
 
         return services;
     }

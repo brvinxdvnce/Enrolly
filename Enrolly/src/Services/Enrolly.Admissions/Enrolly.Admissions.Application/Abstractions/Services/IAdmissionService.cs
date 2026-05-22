@@ -20,7 +20,7 @@ public interface IAdmissionService
         OrderDirection? lastUpdateSortDirection,
         int page,
         int pageSize);
-    public Task<Result<Guid>> CreateAdmission(AdmissionCreateDto dto);
+    public Task<Result<Guid>> CreateAdmission(Guid applicantId);
     public Task<Result<AdmissionViewDto>> GetAdmission(Guid id);
     public Task<Result> ChangeAdmissionStatus(Guid admissionId, AdmissionStatus status);
     public Task<Result> DeleteAdmission(Guid id);

@@ -24,8 +24,7 @@ public class AdmissionService : IAdmissionService
         _applicantRepository = applicantRepository;
         _admissionMapper = admissionMapper;
     }
-
-
+    
     public async Task<Result<IEnumerable<AdmissionViewDto>>> GetAdmissionsByApplicantId(Guid applicantId)
     {
         return await _admissionRepository.GetByApplicantId(applicantId)
@@ -56,9 +55,18 @@ public class AdmissionService : IAdmissionService
         );
     }
 
-    public async Task<Result<Guid>> CreateAdmission(AdmissionCreateDto admission)
+    public async Task<Result<Guid>> CreateAdmission(Guid applicantId)
     {
-        return await _admissionRepository.Add(_admissionMapper.FromCreateDto(admission));
+        var admission = new Admission(applicantId);
+        var applicant = (await _applicantRepository.GetById(applicantId)).Value;
+        
+        var currentAdmissions = await _admissionRepository.GetByApplicantId(applicantId);
+        
+        if (currentAdmissions.Value.Count == 0)
+            admission.AddEvent(new AdmissionStatusOpenedEvent(
+                applicantId, admission.Id, applicant.Email, applicant.Name));
+            
+        return await _admissionRepository.Add(admission);
     }
 
     public async Task<Result<AdmissionViewDto>> GetAdmission(Guid id)
@@ -70,10 +78,10 @@ public class AdmissionService : IAdmissionService
 
     public async Task<Result> ChangeAdmissionStatus(Guid admissionId, AdmissionStatus status)
     {
-        if (status != AdmissionStatus.Closed) 
-            return await _admissionRepository.ChangeAdmissionStatus(admissionId, status);
+        //if (status != AdmissionStatus.Closed) 
+        return await _admissionRepository.ChangeAdmissionStatus(admissionId, status);
 
-        return await _admissionRepository.GetById(admissionId)
+        /*return await _admissionRepository.GetById(admissionId)
             .Bind(async admission => await _applicantRepository.GetById(admission.ApplicantId)
                 .Map(applicant => (admission, applicant)))
             .Tap(pair =>
@@ -86,7 +94,7 @@ public class AdmissionService : IAdmissionService
                 ));
             })
             .Bind(async pair => await _applicantRepository.Update(pair.applicant))
-            .Bind(async _ => await _admissionRepository.ChangeAdmissionStatus(admissionId, status));
+            .Bind(async _ => await _admissionRepository.ChangeAdmissionStatus(admissionId, status));*/
     }
 
     public async Task<Result> DeleteAdmission(Guid admissionId)

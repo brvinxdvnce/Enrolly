@@ -4,6 +4,7 @@ using Enrolly.Admissions.Domain.Entities;
 using Enrolly.Admissions.Domain.Enums;
 using Enrolly.Admissions.Domain.Repositories;
 using Enrolly.Admissions.Infrastructure.Database;
+using Enrolly.Contracts.Events.Events.Admissions;
 using Enrolly.Shared.Logging;
 using Enrolly.Shared.Logging.Utils.Enums;
 using Enrolly.Shared.Logging.Utils.Result;
@@ -58,8 +59,6 @@ public class AdmissionRepository : IAdmissionRepository
                 .ThenInclude(p => p.Faculty)
                 .AsQueryable();
 
-        // add ThenInclude later plz dont forget !!!!!!!!!!!!!!!!
-        
         if (applicantName is not null)
             admissions = admissions.Where(a => a.Applicant.Name.Contains(applicantName));
         
@@ -113,17 +112,16 @@ public class AdmissionRepository : IAdmissionRepository
     {
         var exists = await _dbContext.Admissions
             .AnyAsync(a => a.Id == admission.Id);
-        
-        if (exists)
-            return Result.Failure<Guid>(ResultError.Conflict("Admission already exists"));
+        if (exists) return Result.Failure<Guid>(
+            ResultError.Conflict("Admission already exists"));
         
         var user = await _dbContext.Applicants
-            .FirstOrDefaultAsync(u => u.Id == admission.ApplicantId);
-        
-        if (user is null)
-            return Result.Failure<Guid>(ResultError.NotFound("Applicant not found"));
-        
-        user.Admissions.Add(admission);
+           .FirstOrDefaultAsync(u => u.Id == admission.ApplicantId);
+        if (user is null) return Result.Failure<Guid>(
+            ResultError.NotFound("Applicant not found"));
+
+        _dbContext.Admissions.Add(admission);
+        //user.Admissions.Add(admission);
         
         await _dbContext.SaveChangesAsync();
         
@@ -137,14 +135,16 @@ public class AdmissionRepository : IAdmissionRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Id == id);
 
-        return Result.SuccessIf(admission is not null, admission!, $"Admissions with id {id} not found");
+        return Result.SuccessIf(admission is not null, admission!,
+            ResultError.NotFound($"Admissions with id {id} not found"));
     }
 
     public async Task<Result> DeleteById(Guid id)
     {
         var admission = await _dbContext.Admissions.FirstOrDefaultAsync(a => a.Id == id);
 
-        if (admission is null) return Result.Failure($"Admissions with id {id} not found");
+        if (admission is null) return Result.Failure(
+            ResultError.NotFound($"Admissions with id {id} not found"));
         
         _dbContext.Admissions.Remove(admission);
         await  _dbContext.SaveChangesAsync();
@@ -157,13 +157,36 @@ public class AdmissionRepository : IAdmissionRepository
         var admission = await _dbContext.Admissions
             .FirstOrDefaultAsync(a => a.Id == admissionId);
         
+        if (admission is null) return Result.Failure(
+            ResultError.NotFound($"Admission with id {admissionId} not found"));
+
+        var applicant = await _dbContext.Applicants
+            .FirstOrDefaultAsync(a => a.Id == admission.ApplicantId);
+        if (applicant is null) return Result.Failure(
+            ResultError.NotFound($"Applicant with id {admission.ApplicantId} not found"));
+        
+        var manager = await _dbContext.Managers
+            .FirstOrDefaultAsync(m => m.Id == managerId);
+        if (manager is null) return Result.Failure(
+            ResultError.NotFound($"Manager with id {managerId} not found"));
+        
         return await Result
-            .SuccessIf(admission is not null,
+            .SuccessIf(admission is not null, 
                 ResultError.NotFound($"Admissions with id {admissionId} not found"))
             .Ensure(() => admission!.ManagerId == null,
                 ResultError.Conflict("Admission already had a manager"))
             .Tap(() => admission!.ManagerId = managerId)
             .Tap(() => admission!.LastUpdateTime = DateTime.UtcNow)
+            .Tap(() => admission.AddEvent(
+                new ManagerAssignedToAdmissionEvent(
+                    admission.ApplicantId,
+                    managerId,
+                    admissionId,
+                    applicant.Email,
+                    manager.Email,
+                    applicant.Name,
+                    manager.Name
+                    )))
             .Tap(async () => { await _dbContext.SaveChangesAsync(); });
     }
 
@@ -171,33 +194,79 @@ public class AdmissionRepository : IAdmissionRepository
     {
         var admission = await _dbContext.Admissions
             .FirstOrDefaultAsync(a => a.Id == admissionId);
-
+        if (admission is null) return Result.Failure(
+            ResultError.NotFound($"Admissions with id {admissionId} not found"));
+        
+        var applicant = await _dbContext.Applicants
+            .FirstOrDefaultAsync(a => a.Id == admission.ApplicantId);
+        if (applicant is null) return Result.Failure(
+            ResultError.NotFound($"Applicant with id {admission.ApplicantId} not found"));
+        
+        var manager = await _dbContext.Managers
+            .FirstOrDefaultAsync(m  => m.Id == admission.ManagerId);
+        if (manager is null) return Result.Failure(
+            ResultError.NotFound($"Manager with id {admission.ManagerId} not found"));
+        
         return await Result
             .SuccessIf(admission is not null,
                 ResultError.NotFound($"Admissions with id {admissionId} not found"))
             .Tap(() => admission!.ManagerId = null)
             .Tap(() => admission!.LastUpdateTime = DateTime.UtcNow)
+            .Tap(() => admission.AddEvent(
+                new ManagerRemovedFromAdmissionEvent(admission.ApplicantId, 
+                    manager.Id,
+                    admissionId,
+                    applicant.Email,
+                    manager.Email,
+                    applicant.Name,
+                    manager.Name)))
             .Tap(async () => await _dbContext.SaveChangesAsync());
     }
 
     public async Task<Result<Applicant>> GetApplicant(Guid admissionId)
     {
-        var admission = await _dbContext.Admissions.AsNoTracking().FirstOrDefaultAsync(a => a.Id == admissionId);
+        var admission = await _dbContext.Admissions
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == admissionId);
         
         if (admission is null) 
-            return Result.Failure<Applicant>(ResultError.NotFound("Admission not found"));
+            return Result.Failure<Applicant>(
+                ResultError.NotFound("Admission not found"));
         
         var applicant = await _dbContext.Applicants
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.Id == admission.ApplicantId);
         
-        return Result.SuccessIf(applicant is not null, applicant!, ResultError.NotFound("Applicant not found"));
+        return Result.SuccessIf(applicant is not null, applicant!, 
+            ResultError.NotFound("Applicant not found"));
     }
 
     public async Task<Result> ChangeAdmissionStatus(Guid admissionId, AdmissionStatus status)
     {
         var admission = await _dbContext.Admissions
             .FirstOrDefaultAsync(a => a.Id == admissionId);
+        if (admission is null) return Result.Failure(
+            ResultError.NotFound($"Admission with id {admissionId} not found"));
+
+        if (admission.AdmissionStatus == status)
+            return Result.Success();
+        
+        var applicant = await _dbContext.Applicants
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == admission.ApplicantId);
+        
+        bool isAnyClosed = await _dbContext.Admissions
+            .AnyAsync(a => a.ApplicantId == admission.ApplicantId 
+                           &&  a.AdmissionStatus == AdmissionStatus.Closed
+                           && a.Id != admission.Id);
+        
+        if (isAnyClosed && status != AdmissionStatus.Closed) admission.AddEvent(
+            new AdmissionStatusOpenedEvent(
+                admission.ApplicantId, admissionId, applicant.Email, applicant.Name));
+        
+        if (status == AdmissionStatus.Closed)
+            admission.AddEvent(new AdmissionStatusClosedEvent(
+                admission.ApplicantId, admission.Id, applicant.Email, applicant.Name));
         
         return await Result.SuccessIf(admission is not null, 
             ResultError.NotFound("Admission not found"))
