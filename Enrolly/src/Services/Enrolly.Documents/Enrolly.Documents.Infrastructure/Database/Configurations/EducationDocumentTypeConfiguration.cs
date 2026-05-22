@@ -8,6 +8,8 @@ public class EducationDocumentTypeConfiguration : IEntityTypeConfiguration<Educa
 {
     public void Configure(EntityTypeBuilder<EducationDocumentType> builder)
     {
+        builder.ToTable("education_document_type");
+
         builder.HasKey(e => e.Id);
         
         builder.Property(e => e.Id)

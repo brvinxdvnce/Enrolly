@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Enrolly.Contracts\Enrolly.Contracts.csproj" />
       <ProjectReference Include="..\Enrolly.Documents.Domain\Enrolly.Documents.Domain.csproj" />
     </ItemGroup>
 

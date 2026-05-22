@@ -8,6 +8,8 @@ public class PassportConfiguration : IEntityTypeConfiguration<Passport>
 {
     public void Configure(EntityTypeBuilder<Passport> builder)
     {
+        builder.ToTable("passport_meta");
+
         builder.HasKey(p => p.Id);
         
         builder.Property(p => p.Id)

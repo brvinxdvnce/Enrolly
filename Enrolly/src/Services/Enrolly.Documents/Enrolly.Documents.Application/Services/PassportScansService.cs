@@ -1,4 +1,5 @@
 ﻿using Enrolly.Documents.Application.Abstractions;
+using Enrolly.Documents.Application.Abstractions.Services;
 using Enrolly.Documents.Domain.Repositories;
 using File = Enrolly.Documents.Domain.Entities.File;
 

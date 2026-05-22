@@ -1,4 +1,5 @@
 ﻿using Enrolly.Documents.Application.Abstractions;
+using Enrolly.Documents.Application.Abstractions.Services;
 using Enrolly.Documents.Infrastructure.Configurations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;

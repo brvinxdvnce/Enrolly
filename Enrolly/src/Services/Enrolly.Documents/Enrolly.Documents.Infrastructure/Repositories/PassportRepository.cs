@@ -1,6 +1,7 @@
 ﻿using Enrolly.Documents.Domain.Entities;
 using Enrolly.Documents.Domain.Repositories;
 using Enrolly.Documents.Infrastructure.Database;
+using Enrolly.Shared.Logging.Utils.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,6 +21,7 @@ public class PassportRepository : IPassportRepository
     public async Task<Passport?> GetByIdAsync(Guid id)
     {
         return await _dbContext.Passports
+            .Include(p => p.Files)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
     }
@@ -43,7 +45,7 @@ public class PassportRepository : IPassportRepository
     {
         var currPassport = await _dbContext.Passports
             .FirstOrDefaultAsync(p => p.Id == passport.Id)
-            ?? throw new InvalidOperationException();
+            ?? throw new NotFoundException($"Passport with Id {passport.Id} not found");
        
         currPassport.Fullname = passport.Fullname?? currPassport.Fullname;
         currPassport.DepartmentCode = passport.DepartmentCode ?? currPassport.DepartmentCode;

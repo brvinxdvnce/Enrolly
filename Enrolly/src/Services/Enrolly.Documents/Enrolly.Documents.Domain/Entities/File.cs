@@ -1,5 +1,4 @@
-﻿
-namespace Enrolly.Documents.Domain.Entities;
+﻿namespace Enrolly.Documents.Domain.Entities;
 
 public class File
 {

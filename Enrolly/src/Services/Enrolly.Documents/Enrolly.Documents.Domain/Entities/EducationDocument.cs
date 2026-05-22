@@ -1,12 +1,13 @@
 ﻿using System.Reflection.Metadata;
+using Enrolly.Contracts.Events.Abstractions;
 
 namespace Enrolly.Documents.Domain.Entities;
 
-public class EducationDocument
+public class EducationDocument : DomainEntity
 {
     public EducationDocument () {}
     
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string Series { get; set; }
     public string Number { get; set; }
     public DateOnly IssueDate { get; set; }

@@ -8,6 +8,8 @@ public class ApplicantConfiguration : IEntityTypeConfiguration<Applicant>
 {
     public void Configure(EntityTypeBuilder<Applicant> builder)
     {
+        builder.ToTable("applicant");
+        
         builder.HasKey(a => a.Id);
     
         builder.Property(a => a.Id)
