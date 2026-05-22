@@ -7,7 +7,7 @@ public class ApplicantDto
 {
     public Guid Id { get; set; }
     public DateOnly DateOfBirth { get; set; } 
-    public Guid? CitizenshipId { get; set; }
+    public int? CitizenshipId { get; set; }
     public Gender? Gender { get; set; }
     
     public Citizenship? Citizenship { get; set; }

@@ -13,5 +13,8 @@ public class ApplicantConfiguration : IEntityTypeConfiguration<Applicant>
         builder.HasOne(a => a.Account)
             .WithOne(u => u.ApplicantProfile)
             .HasForeignKey<Applicant>(a => a.Id);
+
+        builder.HasMany<Manager>(a => a.Managers)
+            .WithMany(m => m.PendingApplicants);
     }
 }

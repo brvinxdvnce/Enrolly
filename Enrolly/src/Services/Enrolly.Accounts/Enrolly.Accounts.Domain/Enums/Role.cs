@@ -1,9 +1,9 @@
 ﻿namespace Enrolly.Accounts.Domain.Enums;
 
-public enum Role
+/*public enum Role
 {
     Applicant,
     Manager,
     GeneralManager,
     Admin
-}
+}*/

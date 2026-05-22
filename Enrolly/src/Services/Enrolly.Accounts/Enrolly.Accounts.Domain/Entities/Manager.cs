@@ -1,8 +1,9 @@
 ﻿using Enrolly.Accounts.Domain.Enums;
+using Enrolly.Contracts.Events.Abstractions;
 
 namespace Enrolly.Accounts.Domain.Entities;
 
-public class Manager
+public class Manager : DomainEntity
 {
     public Manager () {}
     
@@ -11,4 +12,5 @@ public class Manager
     public ManagerGrade Grade { get; set; }
     
     public User Account { get; set; }
+    public List<Applicant> PendingApplicants { get; set; } = new List<Applicant>();
 }

@@ -11,17 +11,13 @@ namespace Enrolly.Accounts.Infrastructure.DependencyInjection;
 public static class AddMessagingExtension
 {
     public static IServiceCollection AddMessaging(this IServiceCollection services)
-    {
-        var configuration = services.BuildServiceProvider().GetRequiredService<IOptions<RabbitConfiguration>>().Value;
-        
-        services.AddMassTransit(c =>
-        {
+    {   
+        services.AddMassTransit(c => {
             //c.AddConsumer<Consumer>()
             
-            c.AddEntityFrameworkOutbox<UsersDbContext>(cfg =>
+            c.AddEntityFrameworkOutbox<UsersDbContext>(cfg => 
             {
                 cfg.UsePostgres();
-                
                 cfg.UseBusOutbox();
                 
                 cfg.QueryDelay = TimeSpan.FromSeconds(15);
@@ -29,7 +25,9 @@ public static class AddMessagingExtension
             
             c.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host(configuration.Host, "/", h =>
+                var configuration = context.GetRequiredService<IOptions<RabbitConfiguration>>().Value;
+                
+                cfg.Host(configuration.Host, "/", h => 
                 {
                     h.Username(configuration.UserName);
                     h.Password(configuration.Password);

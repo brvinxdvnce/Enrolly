@@ -2,6 +2,7 @@
 using Enrolly.Accounts.Domain.Repositories;
 using Enrolly.Accounts.Infrastructure.Database;
 using Enrolly.Contracts.Events;
+using Enrolly.Contracts.Events.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace Enrolly.Accounts.Infrastructure.Repositories;

@@ -22,6 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Enrolly.Auth\Enrolly.Auth.csproj" />
       <ProjectReference Include="..\..\..\Shared\Enrolly.Shared\Enrolly.Shared.csproj" />
       <ProjectReference Include="..\Enrolly.Accounts.Application\Enrolly.Accounts.Application.csproj" />
       <ProjectReference Include="..\Enrolly.Accounts.Infrastructure\Enrolly.Accounts.Infrastructure.csproj" />

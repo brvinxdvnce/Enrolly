@@ -17,18 +17,33 @@ namespace Enrolly.Accounts.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ApplicantManager", b =>
+                {
+                    b.Property<Guid>("ManagersId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PendingApplicantsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ManagersId", "PendingApplicantsId");
+
+                    b.HasIndex("PendingApplicantsId");
+
+                    b.ToTable("ApplicantManager");
+                });
 
             modelBuilder.Entity("Enrolly.Accounts.Domain.Entities.Applicant", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CitizenshipId")
-                        .HasColumnType("uuid");
+                    b.Property<int?>("CitizenshipId")
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
@@ -45,9 +60,8 @@ namespace Enrolly.Accounts.Infrastructure.Migrations
 
             modelBuilder.Entity("Enrolly.Accounts.Domain.Entities.Citizenship", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
 
                     b.Property<string>("IsoCode")
                         .IsRequired()
@@ -59,7 +73,309 @@ namespace Enrolly.Accounts.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Citizenship");
+                    b.ToTable("citizenship", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsoCode = "RU",
+                            Name = "Россия"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsoCode = "US",
+                            Name = "США"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsoCode = "DE",
+                            Name = "Германия"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsoCode = "FR",
+                            Name = "Франция"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsoCode = "GB",
+                            Name = "Великобритания"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IsoCode = "IT",
+                            Name = "Италия"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IsoCode = "ES",
+                            Name = "Испания"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            IsoCode = "CN",
+                            Name = "Китай"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            IsoCode = "JP",
+                            Name = "Япония"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            IsoCode = "IN",
+                            Name = "Индия"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            IsoCode = "BR",
+                            Name = "Бразилия"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            IsoCode = "CA",
+                            Name = "Канада"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            IsoCode = "AU",
+                            Name = "Австралия"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            IsoCode = "MX",
+                            Name = "Мексика"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            IsoCode = "KR",
+                            Name = "Южная Корея"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            IsoCode = "NL",
+                            Name = "Нидерланды"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            IsoCode = "SE",
+                            Name = "Швеция"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            IsoCode = "NO",
+                            Name = "Норвегия"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            IsoCode = "CH",
+                            Name = "Швейцария"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            IsoCode = "BE",
+                            Name = "Бельгия"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            IsoCode = "AT",
+                            Name = "Австрия"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            IsoCode = "PL",
+                            Name = "Польша"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            IsoCode = "TR",
+                            Name = "Турция"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            IsoCode = "EG",
+                            Name = "Египет"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            IsoCode = "IL",
+                            Name = "Израиль"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            IsoCode = "AE",
+                            Name = "ОАЭ"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            IsoCode = "SA",
+                            Name = "Саудовская Аравия"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            IsoCode = "ZA",
+                            Name = "ЮАР"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            IsoCode = "AR",
+                            Name = "Аргентина"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            IsoCode = "CL",
+                            Name = "Чили"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            IsoCode = "CO",
+                            Name = "Колумбия"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            IsoCode = "PE",
+                            Name = "Перу"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            IsoCode = "VE",
+                            Name = "Венесуэла"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            IsoCode = "MY",
+                            Name = "Малайзия"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            IsoCode = "SG",
+                            Name = "Сингапур"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            IsoCode = "TH",
+                            Name = "Таиланд"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            IsoCode = "VN",
+                            Name = "Вьетнам"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            IsoCode = "ID",
+                            Name = "Индонезия"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            IsoCode = "PH",
+                            Name = "Филиппины"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            IsoCode = "UA",
+                            Name = "Украина"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            IsoCode = "KZ",
+                            Name = "Казахстан"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            IsoCode = "BY",
+                            Name = "Беларусь"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            IsoCode = "FI",
+                            Name = "Финляндия"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            IsoCode = "DK",
+                            Name = "Дания"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            IsoCode = "PT",
+                            Name = "Португалия"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            IsoCode = "GR",
+                            Name = "Греция"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            IsoCode = "IE",
+                            Name = "Ирландия"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            IsoCode = "CZ",
+                            Name = "Чехия"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            IsoCode = "HU",
+                            Name = "Венгрия"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            IsoCode = "RO",
+                            Name = "Румыния"
+                        });
                 });
 
             modelBuilder.Entity("Enrolly.Accounts.Domain.Entities.Manager", b =>
@@ -142,6 +458,24 @@ namespace Enrolly.Accounts.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "0f8fad5b-d9cb-469f-a165-70867728950e",
+                            Email = "ivanovdanil.hits2024@gmail.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "IVANOVDANIL.HITS2024@GMAIL.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK/Rx9lXaMVl2XRpYwE8soOLgg4u8mECM985xTPE+23pqnopjLqH1iyxEVhE0Y8c8A==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+                            TwoFactorEnabled = false,
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.InboxState", b =>
@@ -337,6 +671,15 @@ namespace Enrolly.Accounts.Infrastructure.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            ConcurrencyStamp = "222cf406-7901-45e0-a625-2fd0f8ab2b27",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -421,6 +764,13 @@ namespace Enrolly.Accounts.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            RoleId = new Guid("22222222-2222-2222-2222-222222222222")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -440,6 +790,21 @@ namespace Enrolly.Accounts.Infrastructure.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("ApplicantManager", b =>
+                {
+                    b.HasOne("Enrolly.Accounts.Domain.Entities.Manager", null)
+                        .WithMany()
+                        .HasForeignKey("ManagersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Enrolly.Accounts.Domain.Entities.Applicant", null)
+                        .WithMany()
+                        .HasForeignKey("PendingApplicantsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Enrolly.Accounts.Domain.Entities.Applicant", b =>

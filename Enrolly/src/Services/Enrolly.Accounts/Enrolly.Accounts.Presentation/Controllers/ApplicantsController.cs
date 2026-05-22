@@ -1,9 +1,12 @@
 ﻿using Enrolly.Accounts.Application.DTOs;
 using Enrolly.Accounts.Application.Services.Interfaces;
+using Enrolly.Accounts.Presentation.EndpointAttributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Accounts.Presentation.Controllers;
 
+[Authorize]
 [Route("api/v1/applicants")]
 [ApiController]
 public class ApplicantsController : ControllerBase
@@ -23,35 +26,38 @@ public class ApplicantsController : ControllerBase
         return Ok(await _applicantService.GetApplicantsAsync());
     }
     
-    [HttpPost("{id:guid}")]
+    [HttpPost("{applicantId:guid}")]
     public async Task<IActionResult> CreateApplicantProfile(
-        [FromRoute] Guid id,
+        [FromRoute] Guid applicantId,
         [FromBody] ApplicantDto dto)
     {
-        return Ok(await _applicantService.CreateApplicantAsync(id, dto));
+        return Ok(await _applicantService.CreateApplicantAsync(applicantId, dto));
     }
     
-    [HttpGet("{id:guid}")]
+    [OwnerOrManagerEditAccess]
+    [HttpGet("{applicantId:guid}")]
     public async Task<IActionResult> GetApplicantInfo(
-        [FromRoute] Guid id)
+        [FromRoute] Guid applicantId)
     {
-        return Ok(await _applicantService.GetApplicantByIdAsync(id));
+        return Ok(await _applicantService.GetApplicantByIdAsync(applicantId));
     }
     
-    [HttpPatch("{id:guid}")]
+    [OwnerOrManagerEditAccess]
+    [HttpPatch("{applicantId:guid}")]
     public async Task<IActionResult> UpdateApplicantInfo(
-        [FromRoute] Guid id,
+        [FromRoute] Guid applicantId,
         [FromBody] ApplicantDto dto)
     {
-        await _applicantService.UpdateApplicantAsync(id, dto);
+        await _applicantService.UpdateApplicantAsync(applicantId, dto);
         return NoContent();
     }
     
-    [HttpDelete("{id:guid}")]
+    [OwnerOrManagerEditAccess]
+    [HttpDelete("{applicantId:guid}")]
     public async Task<IActionResult> DeleteApplicantProfile(
-        [FromRoute] Guid id)
+        [FromRoute] Guid applicantId)
     {
-        await _applicantService.DeleteApplicantAsync(id);
+        await _applicantService.DeleteApplicantAsync(applicantId);
         return NoContent();
     }
 }

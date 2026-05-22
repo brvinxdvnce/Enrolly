@@ -2,6 +2,8 @@
 using Enrolly.Accounts.Domain.Enums;
 using Enrolly.Accounts.Domain.Repositories;
 using Enrolly.Accounts.Infrastructure.Database;
+using Enrolly.Contracts.Events.Events;
+using Enrolly.Shared.Logging.Utils.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Enrolly.Accounts.Infrastructure.Repositories;
@@ -17,10 +19,19 @@ public class ManagerRepository : IManagerRepository
 
     public async Task<Guid> CreateManagerAsync(Guid id, Manager dto)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id) ?? throw new Exception("User not found");
+        var user = await _dbContext.Users
+                   .Include(u => u.ManagerProfile)
+                   .FirstOrDefaultAsync(x => x.Id == id) 
+                   ?? throw new NotFoundException("User not found");
+
+        if (user.ManagerProfile is not null)
+            throw new InvalidOperationException("Manager profile is already created");
+        
         user.ManagerProfile = dto;
+        user.ManagerProfile.AddEvent(new ManagerRegisteredEvent(user.Id, user.Email, user.UserName));
+        
         await _dbContext.SaveChangesAsync();
-        return id;
+        return user.ManagerProfile.Id;
     }
 
     public async Task<Manager?> GetManagerByIdAsync(Guid id)
@@ -50,6 +61,11 @@ public class ManagerRepository : IManagerRepository
     public async Task DeleteManagerAsync(Guid id)
     {
         var manager = await _dbContext.Managers.FirstOrDefaultAsync(x => x.Id == id);
+        if (manager is null)
+            throw new NotFoundException();
+        
+        manager.AddEvent(new ManagerDeletedEvent(manager.Id));
+        
         _dbContext.Managers.Remove(manager);
         await _dbContext.SaveChangesAsync();
     }

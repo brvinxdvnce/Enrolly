@@ -2,10 +2,12 @@
 using Enrolly.Accounts.Application.Services.Interfaces;
 using Enrolly.Accounts.Domain.Entities;
 using Enrolly.Accounts.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Accounts.Presentation.Controllers;
 
+[Authorize]
 [Route("api/v1/managers")]
 [ApiController]
 public class ManagersController : ControllerBase
@@ -24,51 +26,51 @@ public class ManagersController : ControllerBase
         return Ok(await _managerService.GetManagersAsync(grade));
     }
     
-    [HttpGet("{id:guid}")]
+    [HttpGet("{managerId:guid}")]
     public async Task<IActionResult> GetManager(
-        [FromRoute] Guid id)
+        [FromRoute] Guid managerId)
     {
-        return Ok(await _managerService.GetManagerByIdAsync(id));
+        return Ok(await _managerService.GetManagerByIdAsync(managerId));
     }
     
-    [HttpPost("{id:guid}")]
+    [HttpPost("{managerId:guid}")]
     public async Task<IActionResult> CreateManager(
-        [FromRoute] Guid id,
+        [FromRoute] Guid managerId,
         [FromBody] ManagerDto dto)
     {
-        return Ok(await _managerService.CreateManagerAsync(id, dto));
+        return Ok(await _managerService.CreateManagerAsync(managerId, dto));
     }
     
-    [HttpPatch("{id:guid}")]
+    [HttpPatch("{managerId:guid}")]
     public async Task<IActionResult> UpdateManagerInfo(
-        [FromRoute] Guid id,
+        [FromRoute] Guid managerId,
         [FromBody] ManagerDto dto)
     {
-        await _managerService.UpdateManagerAsync(id, dto);
+        await _managerService.UpdateManagerAsync(managerId, dto);
         return NoContent();
     }
     
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{managerId:guid}")]
     public async Task<IActionResult> DeleteManager(
-        [FromRoute] Guid id)
+        [FromRoute] Guid managerId)
     {
-        await _managerService.DeleteManagerAsync(id);
+        await _managerService.DeleteManagerAsync(managerId);
         return NoContent();
     }
     
-    [HttpPost("{id:guid}/promote")]
+    [HttpPost("{managerId:guid}/promote")]
     public async Task<IActionResult> Promote(
-        [FromRoute] Guid id)
+        [FromRoute] Guid managerId)
     {
-        await _managerService.PromoteAsync(id);
+        await _managerService.PromoteAsync(managerId);
         return NoContent();
     }
     
-    [HttpPost("{id:guid}/demote")]
+    [HttpPost("{managerId:guid}/demote")]
     public async Task<IActionResult> Demote(
-        [FromRoute] Guid id)
+        [FromRoute] Guid managerId)
     {
-        await _managerService.DemoteAsync(id);
+        await _managerService.DemoteAsync(managerId);
         return NoContent();
     }
 }

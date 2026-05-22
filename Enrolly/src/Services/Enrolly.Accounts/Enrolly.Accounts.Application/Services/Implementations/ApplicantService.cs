@@ -25,7 +25,6 @@ public class ApplicantService : IApplicantService
     public async Task<Guid> CreateApplicantAsync(Guid id, ApplicantDto dto)
     {
         var applicant = _mapper.FromDto(dto);
-        _logger.LogError("Creating applicant with id: {id}", applicant.Id);
         await _applicantRepository.CreateApplicantAsync(id, applicant);
         return id;
     }

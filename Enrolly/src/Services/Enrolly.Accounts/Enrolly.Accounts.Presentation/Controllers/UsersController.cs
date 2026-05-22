@@ -2,45 +2,45 @@
 using Enrolly.Accounts.Application.Services.Interfaces;
 using Enrolly.Accounts.Domain.Entities;
 using Enrolly.Accounts.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Accounts.Presentation.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/users")]
 public class UsersController : ControllerBase
 {
     private readonly IUserProfileService _profileService;
-    private readonly UserManager<User> _userManager;
     
-    public UsersController(UserManager<User> userManager, IUserProfileService profileService)
+    public UsersController(IUserProfileService profileService)
     {
-        _userManager = userManager;
         _profileService = profileService;
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet("{userId:guid}")]
     public async Task<IActionResult> GetUser(
-        [FromRoute] Guid id)
+        [FromRoute] Guid userId)
     {
-        return Ok(await _profileService.GetUserAsync(id));
+        return Ok(await _profileService.GetUserAsync(userId));
     }
     
-    [HttpPatch("{id:guid}")]
+    [HttpPatch("{userId:guid}")]
     public async Task<IActionResult> UpdateInfo(
-        [FromRoute] Guid id,
+        [FromRoute] Guid userId,
         [FromBody] UpdateUserDto updateUser)
     {
-        await _profileService.UpdateUserAsync(id, updateUser);
+        await _profileService.UpdateUserAsync(userId, updateUser);
         return NoContent();
     }
     
-    [HttpDelete("{id:guid}")]
+    [HttpDelete("{userId:guid}")]
     public async Task<IActionResult> DeleteAccount(
-        [FromRoute] Guid id)
+        [FromRoute] Guid userId)
     {
-        await _profileService.DeleteUserAsync(id);
+        await _profileService.DeleteUserAsync(userId);
         return NoContent();
     }
 }
