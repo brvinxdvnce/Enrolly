@@ -1,16 +1,13 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
-using Enrolly.EduDictionary.Application.Mappings;
+﻿using Enrolly.EduDictionary.Application.Mappings;
 using Enrolly.EduDictionary.Application.Repositories;
 using Enrolly.EduDictionary.Application.Services.Implementations;
 using Enrolly.EduDictionary.Application.Services.Interfaces;
 using Enrolly.EduDictionary.Domain.Repositories;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Enrolly.EduDictionary.Application.Configuration;
+namespace Enrolly.EduDictionary.Application.DependencyInjection;
 
-public static class DependencyInjection
+public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
@@ -19,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IImportSummaryRepository, ImportSummaryRepository>();
         services.AddScoped<IFacultyRepository, FacultyRepository>();
         services.AddScoped<IProgramRepository, ProgramRepository>();
+        
         return services;
     }
 
@@ -28,12 +26,14 @@ public static class DependencyInjection
         services.AddScoped<EducationLevelMapper>();
         services.AddScoped<FacultyMapper>();
         services.AddScoped<ProgramMapper>();
+        
         return services;
     }
 
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IExternalDataCollector, ExternalDataCollector>();
+        
         return services;
     }
     

@@ -1,9 +1,10 @@
 ﻿
+using Enrolly.Contracts.Events.Abstractions;
 using Enrolly.EduDictionary.Domain.Enums;
 
 namespace Enrolly.EduDictionary.Domain.Entities;
 
-public class EducationLevel
+public class EducationLevel : DomainEntity
 {
     public EducationLevel () {}
     

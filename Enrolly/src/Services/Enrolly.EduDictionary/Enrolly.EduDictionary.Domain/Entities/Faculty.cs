@@ -1,8 +1,9 @@
-﻿using Enrolly.EduDictionary.Domain.Enums;
+﻿using Enrolly.Contracts.Events.Abstractions;
+using Enrolly.EduDictionary.Domain.Enums;
 
 namespace Enrolly.EduDictoinary.Domain.Entities;
 
-public class Faculty
+public class Faculty : DomainEntity
 {
     public Faculty () {}
 

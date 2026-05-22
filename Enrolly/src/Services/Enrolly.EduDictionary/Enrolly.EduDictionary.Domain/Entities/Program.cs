@@ -1,9 +1,10 @@
-﻿using Enrolly.EduDictionary.Domain.Entities;
+﻿using Enrolly.Contracts.Events.Abstractions;
+using Enrolly.EduDictionary.Domain.Entities;
 using Enrolly.EduDictionary.Domain.Enums;
 
 namespace Enrolly.EduDictoinary.Domain.Entities;
 
-public class Program
+public class Program : DomainEntity
 {
     public Program () {}
     

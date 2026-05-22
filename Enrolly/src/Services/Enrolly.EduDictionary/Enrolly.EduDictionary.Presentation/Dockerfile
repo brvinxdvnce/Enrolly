@@ -7,6 +7,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
 COPY ["src/Services/Enrolly.EduDictionary/Enrolly.EduDictionary.Presentation/Enrolly.EduDictionary.Presentation.csproj", "src/Services/Enrolly.EduDictionary/Enrolly.EduDictionary.Presentation/"]
 COPY ["src/Services/Enrolly.EduDictionary/DictionaryWorker/DictionaryWorker.csproj", "src/Services/Enrolly.EduDictionary/DictionaryWorker/"]
 COPY ["src/Services/Enrolly.EduDictionary/Enrolly.EduDictionary.Domain/Enrolly.EduDictionary.Domain.csproj", "src/Services/Enrolly.EduDictionary/Enrolly.EduDictionary.Domain/"]

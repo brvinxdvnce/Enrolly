@@ -40,6 +40,8 @@ public class ProgramRepository : IProgramRepository
         )
     {
         var programs = _dbContext.Programs
+            .Include(p => p.Faculty)
+            .Include(p => p.EducationLevel)
             .Where(x => x.RelevanceStatus == RelevanceStatus.Active)
             .AsNoTracking()
             .AsQueryable();

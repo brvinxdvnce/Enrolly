@@ -1,8 +1,8 @@
-﻿using System.Diagnostics.SymbolStore;
-using System.Reflection.Metadata;
+﻿using Enrolly.Contracts.Events.Abstractions;
 using Enrolly.EduDictionary.Application.Database.Configurations;
 using Enrolly.EduDictionary.Domain.Entities;
 using Enrolly.EduDictoinary.Domain.Entities;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Enrolly.EduDictionary.Application.Database;
@@ -10,6 +10,8 @@ namespace Enrolly.EduDictionary.Application.Database;
 public class DictionaryDbContext(DbContextOptions<DictionaryDbContext> options) 
     : DbContext(options)
 {
+    //public DictionaryDbContext(DbContextOptions<DictionaryDbContext> options) : this(options, null) { }
+
     public DbSet<ImportSummary> Imports { get; set; }
     public DbSet<DocumentType> DocumentTypes { get; set; }
     public DbSet<EducationLevel> EducationLevels { get; set; }
@@ -25,5 +27,9 @@ public class DictionaryDbContext(DbContextOptions<DictionaryDbContext> options)
         modelBuilder.ApplyConfiguration(new EducationLevelConfiguration());
         modelBuilder.ApplyConfiguration(new FacultyConfiguration());
         modelBuilder.ApplyConfiguration(new ProgramConfiguration());
+        
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
     }
 }

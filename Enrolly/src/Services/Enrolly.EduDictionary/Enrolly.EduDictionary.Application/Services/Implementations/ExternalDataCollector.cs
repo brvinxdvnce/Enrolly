@@ -1,5 +1,10 @@
 ﻿using System.Net.Http.Json;
 using DictionaryWorker.DTOs;
+using Enrolly.Contracts.Events.Events;
+using Enrolly.Contracts.Events.Events.Dictionary.DocumentTypeEvents;
+using Enrolly.Contracts.Events.Events.Dictionary.EducationLevelEvents;
+using Enrolly.Contracts.Events.Events.Dictionary.FacultyEvents;
+using Enrolly.Contracts.Events.Events.Dictionary.ProgramEvents;
 using Enrolly.EduDictionary.Application.Database;
 using Enrolly.EduDictionary.Application.Services.Interfaces;
 using Enrolly.EduDictionary.Domain.DTOs;
@@ -175,6 +180,8 @@ public class ExternalDataCollector : IExternalDataCollector
         HttpClient httpClient, 
         CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Import of education levels has begun");
+        
         var remoteData = await httpClient.GetFromJsonAsync<List<EducationLevelDto>>(
             "https://1c-mockup.kreosoft.space/api/dictionary/education_levels",
             cancellationToken);
@@ -198,6 +205,9 @@ public class ExternalDataCollector : IExternalDataCollector
                 {
                     local.Name = item.Name;
                     local.RelevanceStatus = RelevanceStatus.Active;
+                    
+                    local.AddEvent(new EducationLevelUpdatedEvent(item.Id, item.Name));
+                    
                     ++updatedCount;
                 }
 
@@ -205,9 +215,13 @@ public class ExternalDataCollector : IExternalDataCollector
             }
             else
             {
+                var newEducationLevel = new EducationLevel(item.Id, item.Name, RelevanceStatus.Active);
+                newEducationLevel.AddEvent(new EducationLevelImportedEvent(item.Id, item.Name));
+                
                 await dbContext.EducationLevels.AddAsync(
-                    new EducationLevel(item.Id, item.Name, RelevanceStatus.Active),
+                    newEducationLevel,
                     cancellationToken);
+                
                 ++addedCount;
             }
         }
@@ -215,10 +229,19 @@ public class ExternalDataCollector : IExternalDataCollector
         foreach (var item in localMap.Values)
         {
             item.RelevanceStatus = RelevanceStatus.Deleted;
+            item.AddEvent(new EducationLevelDeletedEvent(item.Id));
             ++deletedCount;
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        
+        _logger.LogInformation(
+            "Import of education levels has ended. " +
+            "Received: {Received}, " +
+            "Added: {AddedCount}, " +
+            "Updated: {UpdatedCount}, " +
+            "Deleted: {DeletedCount} ",
+            receivedCount, addedCount, updatedCount, deletedCount);
         
         return (receivedCount, addedCount, updatedCount, deletedCount);
     }
@@ -228,6 +251,8 @@ public class ExternalDataCollector : IExternalDataCollector
         HttpClient httpClient, 
         CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Import of document types has begun");
+        
         var remoteData = await httpClient.GetFromJsonAsync<List<DocumentTypeDto>>(
             "https://1c-mockup.kreosoft.space/api/dictionary/document_types",
             cancellationToken);
@@ -280,6 +305,13 @@ public class ExternalDataCollector : IExternalDataCollector
                     foreach(var i in item?.NextEducationLevels?.Select(e => e.Id) ?? [])
                         local.NextEducationLevels.Add(localEducationLevelsMap.GetValueOrDefault(i));
                     
+                    local.AddEvent(new DocumentTypeUpdatedEvent(
+                        local.Id,
+                        local.ImportedAt,
+                        local.Name,
+                        local.EducationLevelId,
+                        local.NextEducationLevels.Select(el => el.Id).ToArray()));
+                    
                     ++updatedCount;
                 }
 
@@ -297,6 +329,13 @@ public class ExternalDataCollector : IExternalDataCollector
                 foreach(var i in item?.NextEducationLevels?.Select(e => e.Id) ?? [])
                     newDocType.NextEducationLevels.Add(localEducationLevelsMap.GetValueOrDefault(i));
                 
+                newDocType.AddEvent(new DocumentTypeImportedEvent(
+                    newDocType.Id,
+                    newDocType.ImportedAt,
+                    item.Name,
+                    item.EducationLevel.Id,
+                    item.NextEducationLevels.Select(i => i.Id).ToArray()));
+                
                 await dbContext.DocumentTypes.AddAsync(newDocType, cancellationToken);
                 
                 ++addedCount;
@@ -306,11 +345,20 @@ public class ExternalDataCollector : IExternalDataCollector
         foreach (var item in localDocTypesMap.Values)
         {
             item.RelevanceStatus = RelevanceStatus.Deleted;
+            item.AddEvent(new DocumentTypeDeletedEvent(item.Id));
             ++deletedCount;
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
-
+        
+        _logger.LogInformation(
+            "Import of document types has ended. " +
+            "Received: {Received}, " +
+            "Added: {AddedCount}, " +
+            "Updated: {UpdatedCount}, " +
+            "Deleted: {DeletedCount} ",
+            receivedCount, addedCount, updatedCount, deletedCount);
+        
         return (receivedCount, addedCount, updatedCount, deletedCount);
     }
 
@@ -319,6 +367,8 @@ public class ExternalDataCollector : IExternalDataCollector
         HttpClient httpClient,
         CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Import of faculties has begun.");
+        
         var remoteData = await httpClient.GetFromJsonAsync<List<FacultyDto>>(
             "https://1c-mockup.kreosoft.space/api/dictionary/faculties",
             cancellationToken);
@@ -345,6 +395,9 @@ public class ExternalDataCollector : IExternalDataCollector
                     local.Name = item.Name;
                     local.CreatedAt = item.CreateTime.ToUtc();
                     local.RelevanceStatus = RelevanceStatus.Active;
+                    
+                    local.AddEvent(new FacultyUpdatedEvent(local.Id, local.Name, local.ImportedAt));
+                    
                     ++updatedCount;
                 }
 
@@ -352,9 +405,13 @@ public class ExternalDataCollector : IExternalDataCollector
             }
             else
             {
+                var newFaculty = new Faculty(item.Id, item.Name, item.CreateTime.ToUtc(), RelevanceStatus.Active);
                 await dbContext.Faculties.AddAsync(
-                    new Faculty(item.Id, item.Name, item.CreateTime.ToUtc(), RelevanceStatus.Active),
+                    newFaculty,
                     cancellationToken);
+                
+                newFaculty.AddEvent(new FacultyImportedEvent(newFaculty.Id, newFaculty.Name, newFaculty.ImportedAt));
+                
                 ++addedCount;
             }
         }
@@ -362,10 +419,19 @@ public class ExternalDataCollector : IExternalDataCollector
         foreach (var item in localMap.Values)
         {
             item.RelevanceStatus = RelevanceStatus.Deleted;
+            item.AddEvent(new FacultyDeletedEvent(item.Id));
             ++deletedCount;
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        
+        _logger.LogInformation(
+            "Import of faculties levels has ended. " +
+            "Received: {Received}, " +
+            "Added: {AddedCount}, " +
+            "Updated: {UpdatedCount}," +
+            " Deleted: {DeletedCount}",
+            receivedCount, addedCount, updatedCount, deletedCount);
         
         return (receivedCount, addedCount, updatedCount, deletedCount);
     }
@@ -377,12 +443,17 @@ public class ExternalDataCollector : IExternalDataCollector
         int page = 1,
         int size = 10)
     {
+        _logger.LogInformation("Import of programs has begun.");
+        
         int receivedCount = 0,
             addedCount = 0,
             updatedCount = 0,
             deletedCount = 0;
 
-        var localData = await dbContext.Programs.ToListAsync(cancellationToken);
+        var localData = await dbContext.Programs
+            .Include(p => p.Faculty)
+            .Include(p => p.EducationLevel)
+            .ToListAsync(cancellationToken);
         
         var localMap = localData.ToDictionary(x => x.Id);
         
@@ -423,6 +494,16 @@ public class ExternalDataCollector : IExternalDataCollector
                         local.EducationLevelId = remoteEducationLevelId;
                         local.RelevanceStatus = RelevanceStatus.Active;
 
+                        local.AddEvent(new ProgramUpdatedEvent(
+                            local.Id,
+                            local.ImportedAt,
+                            local.Name,
+                            local.Code,
+                            local.Language,
+                            local.EducationForm,
+                            local?.Faculty?.Id,
+                            local?.EducationLevel?.Id));
+                        
                         ++updatedCount;
                     }
 
@@ -430,7 +511,7 @@ public class ExternalDataCollector : IExternalDataCollector
                 }
                 else
                 {
-                    await dbContext.Programs.AddAsync(
+                    var newProgram =
                         new Program(
                             item.Id,
                             item.Name,
@@ -439,8 +520,22 @@ public class ExternalDataCollector : IExternalDataCollector
                             item.EducationForm,
                             item.CreateTime.ToUtc(),
                             item?.Faculty?.Id ?? Guid.Empty,
-                            item?.EducationLevel?.Id ?? 0, RelevanceStatus.Active),
+                            item?.EducationLevel?.Id ?? 0, RelevanceStatus.Active);
+                    
+                    await dbContext.Programs.AddAsync(
+                        newProgram,
                         cancellationToken);
+                    
+                    newProgram.AddEvent(new ProgramImportedEvent(
+                        newProgram.Id,
+                        newProgram.ImportedAt,
+                        newProgram.Name,
+                        newProgram.Code,
+                        newProgram.Language,
+                        newProgram.EducationForm,
+                        newProgram?.Faculty?.Id,
+                        newProgram?.EducationLevel?.Id));
+                    
                     ++addedCount;
                 }
             }
@@ -453,10 +548,20 @@ public class ExternalDataCollector : IExternalDataCollector
         foreach (var item in localMap.Values)
         {
             item.RelevanceStatus = RelevanceStatus.Deleted;
+            item.AddEvent(new ProgramDeletedEvent(item.Id));
             ++deletedCount;
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
+        
+        _logger.LogInformation(
+            "Import of programs has ended. " +
+            "Received: {Received}, " +
+            "Added: {AddedCount}, " +
+            "Updated: {UpdatedCount}, " +
+            "Deleted: {DeletedCount}",
+            receivedCount, addedCount, updatedCount, deletedCount);
+
         
         return (receivedCount, addedCount, updatedCount, deletedCount);
     }

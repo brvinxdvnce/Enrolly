@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="MassTransit.Abstractions" />
+        <PackageReference Include="MassTransit.RabbitMQ"/>
+        <PackageReference Include="MassTransit.EntityFrameworkCore"/>
+        
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
         <PackageReference Include="Riok.Mapperly"/>
@@ -14,11 +18,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Shared\Enrolly.Contracts\Enrolly.Contracts.csproj" />
       <ProjectReference Include="..\..\..\Shared\Enrolly.Shared\Enrolly.Shared.csproj" />
       <ProjectReference Include="..\Enrolly.EduDictionary.Domain\Enrolly.EduDictionary.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Authorization\Handlers\" />
       <Folder Include="DTOs\" />
     </ItemGroup>
 </Project>

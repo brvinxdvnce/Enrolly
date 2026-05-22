@@ -11,6 +11,6 @@ public class ProgramDto
     public string Code  { get; set; } = "";
     public string Language { get; set; } = "";
     public string EducationForm { get; set; } = "";
-    public Faculty? Faculty { get; set; }
-    public EducationLevel? EducationLevel { get; set; }
+    public FacultyDto? Faculty { get; set; }
+    public EducationLevelDto? EducationLevel { get; set; }
 }
