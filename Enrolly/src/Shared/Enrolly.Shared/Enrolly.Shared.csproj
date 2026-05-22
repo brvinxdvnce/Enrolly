@@ -8,9 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" />
+    <PackageReference Include="MassTransit.Abstractions" />
+      
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+      
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Serilog.Exceptions" />
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry"/>
+    <PackageReference Include="Serilog.Expressions"/>
+    <PackageReference Include="Serilog.Sinks.Console"/>
+    <PackageReference Include="Serilog.Sinks.Seq"/>
+
   </ItemGroup>
 
 </Project>

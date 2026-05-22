@@ -2,8 +2,9 @@
 
 namespace Enrolly.Contracts.Events;
 
-public record ApplicantRegisteredEvent(
-    Guid ApplicantId,
+public record AdmissionStatusChangedEvent(
+    Guid AdmissionId,
+    string ApplicantEmail,
     string ApplicantName,
-    string Email
+    string NewStatus
     ) : IEvent;

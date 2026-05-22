@@ -7,4 +7,5 @@ public class JwtSettings
     public string SecurityKey { get; set; }
     public string SecurityAlgorithm { get; set; }
     public int ExpiresInHours { get; set; }
+    public int RefreshExpiresInHours { get; set; }
 }

@@ -2,9 +2,10 @@
 
 namespace Enrolly.Contracts.Events.Events;
 
-public record ManagerAssignedToApplicationEvent(
+public record ManagerAssignedToAdmissionEvent(
     Guid ApplicantId,
     Guid ManagerId,
+    Guid AdmissionId,
     string ApplicantEmail,
     string ManagerEmail,
     string ApplicantName,
