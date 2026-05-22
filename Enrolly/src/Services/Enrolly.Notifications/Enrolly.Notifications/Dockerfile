@@ -5,7 +5,10 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
 COPY ["src/Services/Enrolly.Notifications/Enrolly.Notifications/Enrolly.Notifications.csproj", "src/Services/Enrolly.Notifications/Enrolly.Notifications/"]
+COPY ["src/Shared/Enrolly.Shared/Enrolly.Shared.csproj", "src/Shared/Enrolly.Shared/"]
+COPY ["src/Shared/Enrolly.Contracts/Enrolly.Contracts.csproj", "src/Shared/Enrolly.Contracts/"]
 RUN dotnet restore "src/Services/Enrolly.Notifications/Enrolly.Notifications/Enrolly.Notifications.csproj"
 COPY . .
 WORKDIR "/src/src/Services/Enrolly.Notifications/Enrolly.Notifications"

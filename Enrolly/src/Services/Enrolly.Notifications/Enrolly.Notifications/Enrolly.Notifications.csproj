@@ -18,13 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\..\..\.dockerignore">
-      <Link>.dockerignore</Link>
-    </Content>
+    <ProjectReference Include="..\..\..\Shared\Enrolly.Contracts\Enrolly.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Enrolly.Shared\Enrolly.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Shared\Enrolly.Contracts\Enrolly.Contracts.csproj" />
-    <ProjectReference Include="..\..\..\Shared\Enrolly.Shared\Enrolly.Shared.csproj" />
+    <Content Include="..\..\..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 </Project>

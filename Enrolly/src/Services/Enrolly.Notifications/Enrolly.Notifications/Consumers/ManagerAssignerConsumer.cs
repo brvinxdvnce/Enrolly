@@ -5,17 +5,25 @@ using MassTransit;
 
 namespace Enrolly.Notifications.Consumers;
 
-public class ManagerAssignerConsumer : IConsumer<ManagerAssignedToApplicationEvent>
+public class ManagerAssignerConsumer : IConsumer<ManagerAssignedToAdmissionEvent>
 {
     private readonly IMailService _mailService;
+    private readonly ILogger<ManagerAssignerConsumer> _logger;
 
-    public ManagerAssignerConsumer(IMailService mailService)
+    public ManagerAssignerConsumer(IMailService mailService, ILogger<ManagerAssignerConsumer> logger)
     {
         _mailService = mailService;
+        _logger = logger;
     }
 
-    public async Task Consume(ConsumeContext<ManagerAssignedToApplicationEvent> context)
+    public async Task Consume(ConsumeContext<ManagerAssignedToAdmissionEvent> context)
     {
+        _logger.LogInformation("Consuming {eventType}, Admission Id: {ApplicantId}, Manager Id : {ManagerId}, ApplicantId: {ApplicantId}",
+            nameof(ManagerAssignedToAdmissionEvent),
+            context.Message.AdmissionId,
+            context.Message.ManagerId,
+            context.Message.ApplicantId);
+        
         await _mailService.SendAsync(
             ManagerAssignerToAdmissionsNotification
                 .ToManager(
@@ -32,5 +40,10 @@ public class ManagerAssignerConsumer : IConsumer<ManagerAssignedToApplicationEve
                         context.Message.ApplicantName,
                         context.Message.ManagerName
                         ));
+        
+        
+        _logger.LogInformation("Successfully sent message to {email}", context.Message.ManagerEmail);
+        
+        _logger.LogInformation("Successfully sent message to {email}", context.Message.ApplicantEmail);
     }
 }

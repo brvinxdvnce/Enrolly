@@ -1,4 +1,5 @@
 ﻿using Enrolly.Contracts.Events;
+using Enrolly.Contracts.Events.Events;
 using Enrolly.Notifications.Models.Notifications;
 using Enrolly.Notifications.Services.Implementations;
 using Enrolly.Notifications.Services.Interfaces;
@@ -19,9 +20,9 @@ public class ApplicantRegisteredConsumer : IConsumer<ApplicantRegisteredEvent>
 
     public async Task Consume(ConsumeContext<ApplicantRegisteredEvent> context)
     {
-        /*var mail = new RegisterNotification(context.Message.Email, context.Message.ApplicantName);
-        await _emailService.SendAsync(mail);
-        */
+        _logger.LogInformation("Consuming {eventType}, Entity Id: {ApplicantId}",
+            nameof(ApplicantRegisteredEvent),
+            context.Message.ApplicantId);
         
         await _emailService
             .SendAsync(
@@ -29,5 +30,7 @@ public class ApplicantRegisteredConsumer : IConsumer<ApplicantRegisteredEvent>
                     .ToApplicant(
                         context.Message.Email,
                         context.Message.ApplicantName));
+        
+        _logger.LogInformation("Successfully sent message to {email}", context.Message.Email);
     }
 }

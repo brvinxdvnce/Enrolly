@@ -4,5 +4,5 @@ namespace Enrolly.Notifications.Services.Interfaces;
 
 public interface IMailService
 {
-    Task SendAsync(IEmailNotification botify);
+    Task SendAsync(IEmailNotification notify);
 }
