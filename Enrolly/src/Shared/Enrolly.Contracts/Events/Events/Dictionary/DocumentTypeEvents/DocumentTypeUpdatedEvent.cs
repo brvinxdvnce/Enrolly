@@ -2,7 +2,8 @@
 
 namespace Enrolly.Contracts.Events.Events.Dictionary.DocumentTypeEvents;
 
-public record DocumentTypeUpdatedEvent( Guid Id,
+public record DocumentTypeUpdatedEvent(
+    Guid Id,
     DateTime CreatedAt,
     string Name,
     int EducationLevelId,

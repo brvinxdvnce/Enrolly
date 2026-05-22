@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Enrolly.Contracts.Events.Abstractions;
 using Enrolly.Documents.Application.DependencyInjection;
 using Enrolly.Documents.Infrastructure.Configurations;
@@ -19,8 +20,14 @@ builder.Services.Configure<MinIOSettings>(builder.Configuration.GetSection("MinI
 builder.Services.Configure<RabbitConfiguration>(builder.Configuration.GetSection("RabbitMQ"));
 
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options => {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 
+builder.Services.ConfigureHttpJsonOptions(options => {
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
 builder.Services.RegisterMinIO();
 builder.Services.RegisterServices();
 builder.Services.AddRepositories();

@@ -1,4 +1,5 @@
 ﻿using Enrolly.Contracts.Events.Events;
+using Enrolly.Contracts.Events.Events.Admissions;
 using Enrolly.Notifications.Models.Notifications;
 using Enrolly.Notifications.Services.Interfaces;
 using MassTransit;

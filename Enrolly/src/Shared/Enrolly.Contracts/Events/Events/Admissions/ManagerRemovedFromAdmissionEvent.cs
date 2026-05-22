@@ -2,7 +2,7 @@
 
 namespace Enrolly.Contracts.Events.Events.Admissions;
 
-public record ManagerAssignedToAdmissionEvent(
+public record ManagerRemovedFromAdmissionEvent(
     Guid ApplicantId,
     Guid ManagerId,
     Guid AdmissionId,

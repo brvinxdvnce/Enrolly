@@ -1,9 +1,11 @@
 using System.Text;
+using Enrolly.Shared.Logging.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddObservability();
 
 builder.Services.AddOpenApi();
 

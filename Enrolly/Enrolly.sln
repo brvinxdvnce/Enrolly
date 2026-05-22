@@ -72,6 +72,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enrolly.Documents.Applicati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enrolly.Contracts", "src\Shared\Enrolly.Contracts\Enrolly.Contracts.csproj", "{FAB77E7D-1053-46F9-8946-B8D365B1C6E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enrolly.Auth", "src\Shared\Enrolly.Auth\Enrolly.Auth.csproj", "{1955B740-63AD-42BC-A474-C6C8759A48C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -334,6 +336,18 @@ Global
 		{FAB77E7D-1053-46F9-8946-B8D365B1C6E7}.Release|x64.Build.0 = Release|Any CPU
 		{FAB77E7D-1053-46F9-8946-B8D365B1C6E7}.Release|x86.ActiveCfg = Release|Any CPU
 		{FAB77E7D-1053-46F9-8946-B8D365B1C6E7}.Release|x86.Build.0 = Release|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Debug|x64.Build.0 = Debug|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Debug|x86.Build.0 = Debug|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Release|x64.ActiveCfg = Release|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Release|x64.Build.0 = Release|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Release|x86.ActiveCfg = Release|Any CPU
+		{1955B740-63AD-42BC-A474-C6C8759A48C0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -371,5 +385,6 @@ Global
 		{E8ECB703-B7B6-4E02-89B5-58F24992BA4F} = {304BC439-6B10-89FE-9FF7-1600E91DE64C}
 		{BB0CCFF8-766C-42A9-BFA7-70AE0B1C19A6} = {304BC439-6B10-89FE-9FF7-1600E91DE64C}
 		{FAB77E7D-1053-46F9-8946-B8D365B1C6E7} = {C8E42992-5E42-0C2B-DBFE-AA848D06431C}
+		{1955B740-63AD-42BC-A474-C6C8759A48C0} = {C8E42992-5E42-0C2B-DBFE-AA848D06431C}
 	EndGlobalSection
 EndGlobal

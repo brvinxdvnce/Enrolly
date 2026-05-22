@@ -1,45 +1,188 @@
 services:
   rabbit:
-    image: rabbitmq:4.2-alpine
-    #rabbitmq:4.2-management - UI
+    image: rabbitmq:4.2-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - enrolly-network
+  
+  
   
   minio:
     image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - enrolly-network
+  
+  
   
   postgresql:
     image: postgres:15-alpine
-  
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: enrolly_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - enrolly-network
+
+
+
   enrolly-api-gw:
+    build:
+      context: .
+      dockerfile: src/Gateways/Enrolly.APIGateway/Enrolly.ApiGateway/Dockerfile
+    depends_on:
+      - enrolly-accounts
+      - enrolly-documents
+      - enrolly-admissions
+      - enrolly-edu-dictionary
     ports:
-      - 
+      - "8080:8080"
+    networks:
+      - enrolly-network
+  
+  
   
   enrolly-accounts:
+    build:
+      context: .
+      dockerfile: src/Services/Enrolly.Accounts/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # База данных: используем имя сервиса 'postgresql' вместо localhost
+      - ConnectionStrings__DbConnection=Host=postgresql;Port=5432;Database=enrolly_accounts_db;Username=postgres;Password=postgrespassword
+      
+      # RabbitMQ: используем имя сервиса 'rabbit'
+      - RabbitMQ__Host=rabbit
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      
+      # JWT Настройки
+      - JwtSettings__Issuer=Enrolly.Accounts
+      - JwtSettings__Audience=Enrolly.ApiGateway
+      - JwtSettings__SecurityKey=BACKEND-DOTNET-LABORATORY-ADMISSIONS-1234567890987654321
+      - JwtSettings__ExpiresInHours=4
+      
+      # Массивы (Roles) передаются по индексу
+      - Roles__0=Applicant
+      - Roles__1=Manager
+      - Roles__2=GeneralManager
+      
+      # Логирование
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__MassTransit=Debug
     depends_on:
-      - postgresql
-    ports:
-      - 
+      postgresql:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
+    networks:
+      - enrolly-network
+
+
 
   enrolly-admissions:
+    build:
+      context: .
+      dockerfile: src/Services/Enrolly.Admissions/Dockerfile
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
+    networks:
+      - enrolly-network
+  
+  
   
   enrolly-documents:
+    build:
+      context: .
+      dockerfile: src/Services/Enrolly.Documents/Dockerfile
     depends_on:
-      - minio
-      - postgresql
+      minio:
+        condition: service_started
+      postgresql:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
+    networks:
+      - enrolly-network
+  
+  
   
   enrolly-edu-dictionary:
+    build:
+      context: .
+      dockerfile: src/Services/Enrolly.EduDictionary/Dockerfile
     depends_on:
-      - postgresql
+      postgresql:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
+    networks:
+      - enrolly-network
+  
+  
   
   enrolly-notifications:
+    build:
+      context: .
+      dockerfile: src/Services/Enrolly.Notifications/Dockerfile
     depends_on:
-      - postgresql
+      rabbit:
+        condition: service_healthy
+    networks:
+      - enrolly-network
+  
+  
   
   enrolly-admin-client:
+    build:
+      context: .
+      dockerfile: src/ClientApps/Enrolly.AdminClient/Dockerfile
     depends_on:
       - enrolly-edu-dictionary
       - enrolly-admissions
       - enrolly-documents
       - enrolly-accounts
-    
+    ports:
+      - "3000:80"
+    networks:
+      - enrolly-network
+
+
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  enrolly-network:
+    driver: bridge
