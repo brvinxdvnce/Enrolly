@@ -11,7 +11,7 @@ public class Applicant : DomainEntity
     public DateOnly DateOfBirth { get; set; } 
     public int? CitizenshipId { get; set; }
     public Gender? Gender { get; set; }
-    public bool IsActiveAdmission = false;
+    public bool IsActiveAdmission { get; set; }  = false;
     public Citizenship? Citizenship { get; set; }
     public ICollection<Manager> Managers { get; set; } = new List<Manager>();
     public User Account { get; set; }
