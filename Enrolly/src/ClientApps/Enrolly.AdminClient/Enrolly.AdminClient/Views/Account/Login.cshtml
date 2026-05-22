@@ -1,0 +1,40 @@
+﻿@model Enrolly.AdminClient.Models.ViewModels.LoginViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Вход";
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Enrolly MVC — Вход</title>
+</head>
+<body>
+<div class="login-box">
+    <div class="login-header">
+        <div class="logo">Enrolly</div>
+        <div class="subtitle">MVC Panel</div>
+    </div>
+    <div class="login-body">
+        @if (Model.Error is not null)
+        {
+            <div class="error-msg">@Model.Error</div>
+        }
+        <form method="post" action="/Account/Login@(ViewBag.ReturnUrl is not null ? "?returnUrl=" + Uri.EscapeDataString(ViewBag.ReturnUrl) : "")">
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input id="Email" name="Email" type="email" class="form-control"
+                       placeholder="user@enrolly.ru" value="@Model.Email" autocomplete="username"/>
+            </div>
+            <div class="form-group">
+                <label for="Password">Пароль</label>
+                <input id="Password" name="Password" type="password" class="form-control"
+                       placeholder="••••••••" autocomplete="current-password"/>
+            </div>
+            <button type="submit" class="btn-login">Войти →</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

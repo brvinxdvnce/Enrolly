@@ -1,0 +1,169 @@
+﻿@using Enrolly.Shared.Logging
+@using Enrolly.AdminClient.Models.Models
+@model Enrolly.AdminClient.Models.ViewModels.ProgramsViewModel
+@{
+    ViewData["Title"] = "Программы";
+
+    int totalPages = Model.Programs is not null && Model.Programs.PageSize > 0
+        ? (int)Math.Ceiling((double)Model.Programs.TotalCount / Model.Programs.PageSize)
+        : 1;
+
+    string PageUrl(int p)
+    {
+        var q = new System.Text.StringBuilder("/Dictionary/Programs?page=").Append(p);
+        q.Append("&pageSize=").Append(Model.PageSize);
+        if (Model.FacultyId.HasValue)          q.Append("&facultyId=").Append(Model.FacultyId);
+        if (Model.EducationLevelId.HasValue)   q.Append("&educationLevelId=").Append(Model.EducationLevelId);
+        if (!string.IsNullOrEmpty(Model.EducationForm)) q.Append("&educationForm=").Append(Uri.EscapeDataString(Model.EducationForm));
+        if (!string.IsNullOrEmpty(Model.Language))      q.Append("&language=").Append(Uri.EscapeDataString(Model.Language));
+        if (!string.IsNullOrEmpty(Model.ProgramName))   q.Append("&programName=").Append(Uri.EscapeDataString(Model.ProgramName));
+        if (!string.IsNullOrEmpty(Model.ProgramCode))   q.Append("&programCode=").Append(Uri.EscapeDataString(Model.ProgramCode));
+        return q.ToString();
+    }
+}
+
+<div class="flex justify-between items-center">
+    <h1>Образовательные программы</h1>
+</div>
+
+<div class="panel">
+    <div class="panel-header"><h2>Фильтры</h2></div>
+    <div class="panel-body">
+        <form method="get" action="/Dictionary/Programs">
+            <input type="hidden" name="page" value="1"/>
+            <input type="hidden" name="pageSize" value="@Model.PageSize"/>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Факультет</label>
+                    <select name="facultyId" class="form-control">
+                        <option value="">Все</option>
+                        @foreach (var f in Model.Faculties)
+                        {
+                            if (Model.FacultyId == f.Id)
+                            {
+                                <option value="@f.Id" selected>@f.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@f.Id">@f.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Уровень обр.</label>
+                    <select name="educationLevelId" class="form-control">
+                        <option value="">Все</option>
+                        @foreach (var l in Model.EducationLevels)
+                        {
+                            if (Model.EducationLevelId == l.Id)
+                            {
+                                <option value="@l.Id" selected>@l.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@l.Id">@l.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Форма обучения</label>
+                    <input type="text" name="educationForm" class="form-control"
+                           value="@Model.EducationForm" placeholder="Очная…"/>
+                </div>
+                <div class="form-group">
+                    <label>Язык</label>
+                    <input type="text" name="language" class="form-control"
+                           value="@Model.Language" placeholder="Русский…"/>
+                </div>
+                <div class="form-group">
+                    <label>Название программы</label>
+                    <input type="text" name="programName" class="form-control"
+                           value="@Model.ProgramName" placeholder="Поиск…"/>
+                </div>
+                <div class="form-group">
+                    <label>Код программы</label>
+                    <input type="text" name="programCode" class="form-control"
+                           value="@Model.ProgramCode" placeholder="09.03.01…"/>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div class="flex gap-8">
+                        <button type="submit" class="btn btn-primary">Применить</button>
+                        <a href="/Dictionary/Programs" class="btn btn-secondary">Сбросить</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2>Результаты</h2>
+        @if (Model.Programs is not null)
+        {
+            <span class="text-muted mono">
+                Всего: @Model.Programs.TotalCount
+            </span>
+        }
+    </div>
+
+    @if (Model.Programs is null || !Model.Programs.Content.Any())
+    {
+        <div class="panel-body">
+            Программы не найдены.
+        </div>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Код</th>
+                    <th>Название</th>
+                    <th>Факультет</th>
+                    <th>Уровень</th>
+                    <th>Форма</th>
+                    <th>Язык</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model.Programs.Content)
+                {
+                    <tr>
+                        <td><span class="mono">@p.Code</span></td>
+                        <td>@p.Name</td>
+                        <td class="text-muted">@(p.Faculty?.Name ?? "—")</td>
+                        <td>@(p.EducationLevel?.Name ?? "—")</td>
+                        <td>@(p.EducationForm ?? "—")</td>
+                        <td>@(p.Language ?? "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (totalPages > 1)
+        {
+            <div class="panel-body">
+                <div class="pagination">
+                    <a href="@PageUrl(Model.Page - 1)"
+                       class="page-btn @(Model.Page <= 1 ? "disabled" : "")">← Назад</a>
+
+                    @for (int i = Math.Max(1, Model.Page - 2); i <= Math.Min(totalPages, Model.Page + 2); i++)
+                    {
+                        <a href="@PageUrl(i)" class="page-btn @(i == Model.Page ? "active" : "")">@i</a>
+                    }
+
+                    <a href="@PageUrl(Model.Page + 1)"
+                       class="page-btn @(Model.Page >= totalPages ? "disabled" : "")">Вперёд →</a>
+
+                    <span class="text-muted mono">
+                        стр. @Model.Page / @totalPages
+                    </span>
+                </div>
+            </div>
+        }
+    }
+</div>
