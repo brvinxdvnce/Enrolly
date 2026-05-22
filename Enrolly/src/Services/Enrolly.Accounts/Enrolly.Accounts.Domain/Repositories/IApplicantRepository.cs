@@ -9,4 +9,7 @@ public interface IApplicantRepository
     public Task<IEnumerable<Applicant?>?> GetApplicantsAsync();
     public Task UpdateApplicantAsync(Guid id, Applicant dto);
     public Task DeleteApplicantAsync(Guid id);
+    public Task<bool> RemoveManagerFromApplicantAsync(Guid applicantId, Guid managerId);
+    public Task<bool> AddManagerToApplicantAsync(Guid applicantId, Guid managerId);
+    public Task<bool> SetAdmissionStatus(Guid applicantId, bool status);
 }

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Enrolly.Accounts.Infrastructure.Consumers;
 using Enrolly.Accounts.Infrastructure.Database;
 using Enrolly.Shared.Logging;
 using Enrolly.Shared.Logging.Utils.Configurations;
@@ -12,8 +13,12 @@ public static class AddMessagingExtension
 {
     public static IServiceCollection AddMessaging(this IServiceCollection services)
     {   
-        services.AddMassTransit(c => {
-            //c.AddConsumer<Consumer>()
+        services.AddMassTransit(c =>
+        {
+            c.AddConsumer<AdmissionStatusClosedConsumer>();
+            c.AddConsumer<AdmissionStatusOpenedConsumer>();
+            c.AddConsumer<ManagerAssignedToAdmissionConsumer>();
+            c.AddConsumer<ManagerRemovedFromAdmissionConsumer>();
             
             c.AddEntityFrameworkOutbox<UsersDbContext>(cfg => 
             {
@@ -31,6 +36,14 @@ public static class AddMessagingExtension
                 {
                     h.Username(configuration.UserName);
                     h.Password(configuration.Password);
+                });
+                
+                cfg.ReceiveEndpoint("Accounts.Events", e =>
+                {
+                    e.ConfigureConsumer<AdmissionStatusClosedConsumer>(context);
+                    e.ConfigureConsumer<AdmissionStatusOpenedConsumer>(context);
+                    e.ConfigureConsumer<ManagerAssignedToAdmissionConsumer>(context);
+                    e.ConfigureConsumer<ManagerRemovedFromAdmissionConsumer>(context);
                 });
                 
                 cfg.ConfigureEndpoints(context);

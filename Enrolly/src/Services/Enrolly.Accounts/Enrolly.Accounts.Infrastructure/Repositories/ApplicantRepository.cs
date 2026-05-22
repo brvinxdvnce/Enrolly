@@ -54,4 +54,57 @@ public class ApplicantRepository : IApplicantRepository
         _dbContext.Applicants.Remove(applicant);
         await _dbContext.SaveChangesAsync();
     }
+    
+    public async Task<bool> RemoveManagerFromApplicantAsync(Guid applicantId, Guid managerId)
+    {
+        var applicant = await _dbContext.Applicants
+            .Include(a => a.Managers)
+            .FirstOrDefaultAsync(a => a.Id == applicantId);
+
+        if (applicant is null)
+            return false;
+
+        var managerToRemove = applicant.Managers.FirstOrDefault(m => m.Id == managerId);
+        if (managerToRemove == null)
+            return false;
+
+        applicant.Managers.Remove(managerToRemove);
+
+        await _dbContext.SaveChangesAsync();
+        
+        return true;
+    }
+
+    public async Task<bool> AddManagerToApplicantAsync(Guid applicantId, Guid managerId)
+    {
+        var applicant = await _dbContext.Applicants
+            .Include(a => a.Managers)
+            .FirstOrDefaultAsync(a => a.Id == applicantId);
+        if (applicant is null) return false;
+        
+        var manager = await _dbContext.Managers
+            .FirstOrDefaultAsync(m => m.Id == managerId);
+        if (manager is null) return false;
+
+        if (!applicant.Managers.Contains(manager))
+        {
+            applicant.Managers.Add(manager);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        return true;
+    }
+
+    public async Task<bool> SetAdmissionStatus(Guid applicantId, bool status)
+    {
+        var applicant = await _dbContext.Applicants
+            .FirstOrDefaultAsync(a => a.Id == applicantId);
+        if (applicant is null) return false;
+        
+        if (applicant.IsActiveAdmission == status) return true;
+
+        applicant.IsActiveAdmission = status;
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
 }
