@@ -14,5 +14,13 @@ public class ProgramConfiguration : IEntityTypeConfiguration<Program>
         
         builder.Property(p => p.Id)
             .ValueGeneratedNever();
+        
+        builder.HasOne(x => x.Faculty)
+            .WithMany()
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
+        builder.HasOne(x => x.EducationLevel)
+            .WithMany()
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

@@ -1,7 +1,11 @@
-﻿using Enrolly.Admissions.Application.Abstractions.Services;
+﻿using System.Security.Claims;
+using Enrolly.Admissions.Application.Abstractions.Services;
 using Enrolly.Admissions.Application.DTOs;
 using Enrolly.Admissions.Domain.Enums;
+using Enrolly.Admissions.Presentation.Extensions;
+using Enrolly.Admissions.Presentation.ResultUtils;
 using Enrolly.Shared.Logging.Utils.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Admissions.Presentation.Endpoints;
@@ -10,29 +14,62 @@ public static class AdmissionEndpoints
 {
     public static WebApplication AddAdmissionEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("api/v1/admissions");
+        var group = app.MapGroup("api/v1/applicants/").RequireAuthorization();
 
-        group.MapPost("/", CreateAdmission);
-        group.MapGet("/", GetAdmissions);
-        group.MapGet("/{admissionId:guid}", GetAdmission);
-        group.MapPost("/{admissionId:guid}", ChangeAdmissionStatus);
-        group.MapDelete("/{admissionId:guid}", DeleteAdmission);
+        group.MapGet("/admissions", GetAdmissions)
+            .WithDisplayName("Просмотреть все заявки в системе.");
         
-        group.MapPost("/{admissionId:guid}/manager", AppointManager);
-        group.MapDelete("/{admissionId:guid}/manager", DismissManager);
+        group.MapGet("{applicantId:guid}/admissions", GetAdmissionsByApplicantId)
+            .RequireAdmissionEditAccess()
+            .WithDisplayName("Посмотреть все заявки конкретного абитуриента.");
+        
+        group.MapPost("{applicantId:guid}/admissions", CreateAdmission)
+            .WithDisplayName("Создать заявку у абитуриента.");
+        
+        group.MapGet("{applicantId:guid}/admissions/{admissionId:guid}", GetAdmission)
+            .RequireAdmissionEditAccess()
+            .WithDisplayName("Просмотреть заявку абитуриента.");
+        
+        group.MapPost("{applicantId:guid}/admissions/{admissionId:guid}", ChangeAdmissionStatus)
+            .RequireAdmissionEditAccess()
+            .WithDisplayName("Изменить статус заявки абитуриента.");
+        
+        group.MapDelete("{applicantId:guid}/admissions/{admissionId:guid}", DeleteAdmission)
+            .RequireAdmissionEditAccess()
+            .WithDisplayName("Удалить заявку абитуриента.");
+        
+        group.MapPost("{applicantId:guid}/admissions/{admissionId:guid}/manager", AppointManager)
+            .WithDisplayName("Назначить менеджера ответственным за заявку.");
+        
+        group.MapDelete("{applicantId:guid}/admissions/{admissionId:guid}/manager", DismissManager)
+            .WithDisplayName("Снять с менеджера ответственность за заявку.");
         
         return app;
     }
 
     private static async Task<IResult> GetAdmission(
+        [FromRoute] Guid applicantId,
         [FromRoute] Guid admissionId,
-        [FromServices] IAdmissionService admissionService)
+        [FromServices] IAdmissionService admissionService,
+        [FromServices] IAuthorizationService authorizationService,
+        ClaimsPrincipal userClaims)
     {
         var result = await admissionService.GetAdmission(admissionId);
         return result.ToActionResult();
     }
 
+    private static async Task<IResult> GetAdmissionsByApplicantId(
+        [FromRoute] Guid applicantId,
+        [FromServices] IAdmissionService admissionService,
+        [FromServices] IAuthorizationService authorizationService,
+        ClaimsPrincipal userClaims)
+    {
+        var result = await admissionService.GetAdmissionsByApplicantId(applicantId);
+        return result.ToActionResult();
+    }
+
     private static async Task<IResult> CreateAdmission(
+        [FromRoute] Guid applicantId,
         [FromServices] IAdmissionService admissionService,
         [FromBody] AdmissionCreateDto newAdmission)
     {
@@ -60,6 +97,7 @@ public static class AdmissionEndpoints
     }
 
     public static async Task<IResult> ChangeAdmissionStatus(
+        [FromRoute] Guid applicantId,
         [FromRoute] Guid admissionId,
         [FromQuery] AdmissionStatus status,
         [FromServices] IAdmissionService admissionService)
@@ -69,6 +107,7 @@ public static class AdmissionEndpoints
     }
 
     public static async Task<IResult> DeleteAdmission(
+        [FromRoute] Guid applicantId,
         [FromRoute] Guid admissionId,
         [FromServices] IAdmissionService admissionService)
     {
@@ -77,6 +116,7 @@ public static class AdmissionEndpoints
     }
     
     public static async Task<IResult> AppointManager(
+        [FromRoute] Guid applicantId,
         [FromQuery] Guid managerId,
         [FromRoute] Guid admissionId,
         [FromServices] IManagerAppointmentService managerAppointmentService)
@@ -86,6 +126,7 @@ public static class AdmissionEndpoints
     }
 
     public static async Task<IResult> DismissManager(
+        [FromRoute] Guid applicantId,
         [FromRoute] Guid admissionId,
         [FromServices] IManagerAppointmentService managerAppointmentService)
     {

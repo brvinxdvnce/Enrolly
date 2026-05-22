@@ -9,6 +9,7 @@ namespace Enrolly.Admissions.Application.Abstractions.Services;
 
 public interface IAdmissionService
 {
+    public Task<Result<IEnumerable<AdmissionViewDto>>> GetAdmissionsByApplicantId(Guid applicantId); 
     public Task<Result<PagedResponce<AdmissionViewDto>>> GetAdmissions(
         string? applicantName,
         string? program,

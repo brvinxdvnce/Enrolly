@@ -29,6 +29,14 @@ public class AdmissionRepository : IAdmissionRepository
         return Result.Success<IReadOnlyList<Admission>>(admissions);
     }
 
+    public async Task<Result<ICollection<Admission>>> GetByApplicantId(Guid applicantId)
+    {
+        var admissions = await _dbContext.Admissions
+            .Where(a => a.ApplicantId == applicantId)
+            .ToListAsync<Admission>();
+
+        return Result.Success<ICollection<Admission>>(admissions);
+    }
 
     public async Task<Result<PagedResponce<Admission>>> GetMany(
         string? applicantName, 

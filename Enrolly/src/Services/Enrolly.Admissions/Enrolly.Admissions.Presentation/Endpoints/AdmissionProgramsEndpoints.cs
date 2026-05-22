@@ -1,5 +1,6 @@
 ﻿using Enrolly.Admissions.Application.Abstractions.Services;
 using Enrolly.Admissions.Domain.Repositories;
+using Enrolly.Admissions.Presentation.ResultUtils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Enrolly.Admissions.Presentation.Endpoints;
@@ -9,7 +10,7 @@ public static class AdmissionProgramsEndpoints
 {
     public static WebApplication AddAdmissionProgramsEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("api/v1/admissions");
+        var group = app.MapGroup("api/v1/admissions").RequireAuthorization();
         
         group.MapPost("{admissionId:guid}/programs", AddProgramToAdmission);
         group.MapDelete("{admissionId:guid}/programs/{programId:guid}", RemoveProgramFromAdmission);
@@ -20,13 +21,13 @@ public static class AdmissionProgramsEndpoints
     }
     
     public static async Task<IResult> AddProgramToAdmission(
-        [FromRoute] Guid id,
+        [FromRoute] Guid admissionId,
         [FromQuery] Guid programId,
         [FromServices] IAdmissionProgramService admissionProgramService,
         [FromQuery] int programPriority = 1
     )
     {
-        var result = await admissionProgramService.AddProgramToAdmission(id, programId, programPriority);
+        var result = await admissionProgramService.AddProgramToAdmission(admissionId, programId, programPriority);
         return result.ToActionResult();
     }
 

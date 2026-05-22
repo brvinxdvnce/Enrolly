@@ -1,8 +1,9 @@
 ﻿using Enrolly.Admissions.Domain.Enums;
+using Enrolly.Contracts.Events.Abstractions;
 
 namespace Enrolly.Admissions.Domain.Entities;
 
-public class Admission
+public class Admission : DomainEntity
 {
     public Admission () {}
 

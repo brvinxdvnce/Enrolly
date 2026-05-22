@@ -8,6 +8,7 @@ namespace Enrolly.Admissions.Domain.Repositories;
 
 public interface IAdmissionRepository
 {
+    public Task<Result<ICollection<Admission>>> GetByApplicantId(Guid userId); 
     public Task<Result<PagedResponce<Admission>>> GetMany(
         string? applicantName,
         string? program,
@@ -19,11 +20,10 @@ public interface IAdmissionRepository
         int page,
         int pageSize);
     public Task<Result<Guid>> Add(Admission admission);
-    public Task<Result<Admission>> GetById(Guid id);
-    public Task<Result> DeleteById(Guid id);
+    public Task<Result<Admission>> GetById(Guid admissionId);
+    public Task<Result> DeleteById(Guid admissionId);
     public Task<Result> AppointManager(Guid admissionId, Guid managerId);
     public Task<Result> DismissManager(Guid admissionId);
     public Task<Result<Applicant>> GetApplicant(Guid admissionId);
     public Task<Result> ChangeAdmissionStatus(Guid admissionId, AdmissionStatus status);
-    
 }

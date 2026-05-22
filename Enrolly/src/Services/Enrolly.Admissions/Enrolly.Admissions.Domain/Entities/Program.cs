@@ -10,6 +10,8 @@ public class Program
     public string Code  { get; set; } = "";
     public string Language { get; set; } = "";
     public string EducationForm { get; set; } = "";
+    public Guid? FacultyId { get; set; }
+    public int? EducationLevelId { get; set; }
     public Faculty? Faculty { get; set; }
     public EducationLevel? EducationLevel { get; set; }
 }

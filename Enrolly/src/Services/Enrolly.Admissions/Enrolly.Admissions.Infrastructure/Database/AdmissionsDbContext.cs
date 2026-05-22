@@ -1,10 +1,12 @@
 ﻿using Enrolly.Admissions.Domain.Entities;
 using Enrolly.Admissions.Infrastructure.Database.Configurations;
+using Enrolly.Contracts.Events.Abstractions;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Enrolly.Admissions.Infrastructure.Database;
     
-public class AdmissionsDbContext(DbContextOptions<AdmissionsDbContext> options) 
+public class AdmissionsDbContext(DbContextOptions<AdmissionsDbContext> options)
     : DbContext(options)
 {
     public DbSet<Applicant> Applicants { get; set; }
@@ -33,5 +35,9 @@ public class AdmissionsDbContext(DbContextOptions<AdmissionsDbContext> options)
         modelBuilder.ApplyConfiguration(new ProgramConfiguration());
         modelBuilder.ApplyConfiguration(new FacultyConfiguration());
         modelBuilder.ApplyConfiguration(new EducationLevelConfiguration());
+        
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
     }
 }

@@ -7,9 +7,14 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
 COPY ["src/Services/Enrolly.Admissions/Enrolly.Admissions.Presentation/Enrolly.Admissions.Presentation.csproj", "src/Services/Enrolly.Admissions/Enrolly.Admissions.Presentation/"]
 COPY ["src/Services/Enrolly.Admissions/Enrolly.Admissions.Domain/Enrolly.Admissions.Domain.csproj", "src/Services/Enrolly.Admissions/Enrolly.Admissions.Domain/"]
+COPY ["src/Shared/Enrolly.Shared/Enrolly.Shared.csproj", "src/Shared/Enrolly.Shared/"]
 COPY ["src/Services/Enrolly.Admissions/Enrolly.Admissions.Application/Enrolly.Admissions.Application.csproj", "src/Services/Enrolly.Admissions/Enrolly.Admissions.Application/"]
+COPY ["src/Services/Enrolly.Admissions/Enrolly.Admissions.Infrastructure/Enrolly.Admissions.Infrastructure.csproj", "src/Services/Enrolly.Admissions/Enrolly.Admissions.Infrastructure/"]
+COPY ["src/Shared/Enrolly.Contracts/Enrolly.Contracts.csproj", "src/Shared/Enrolly.Contracts/"]
+COPY ["src/Shared/Enrolly.Auth/Enrolly.Auth.csproj", "src/Shared/Enrolly.Auth/"]
 RUN dotnet restore "src/Services/Enrolly.Admissions/Enrolly.Admissions.Presentation/Enrolly.Admissions.Presentation.csproj"
 COPY . .
 WORKDIR "/src/src/Services/Enrolly.Admissions/Enrolly.Admissions.Presentation"

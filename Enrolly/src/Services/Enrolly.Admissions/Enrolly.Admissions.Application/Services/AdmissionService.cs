@@ -5,6 +5,7 @@ using Enrolly.Admissions.Application.Mappers;
 using Enrolly.Admissions.Domain.Entities;
 using Enrolly.Admissions.Domain.Enums;
 using Enrolly.Admissions.Domain.Repositories;
+using Enrolly.Contracts.Events.Events.Admissions;
 using Enrolly.Shared.Logging;
 using Enrolly.Shared.Logging.Utils.Enums;
 using Enrolly.Shared.Logging.Utils.Result;
@@ -14,12 +15,22 @@ namespace Enrolly.Admissions.Application.Services;
 public class AdmissionService : IAdmissionService
 {
     private readonly IAdmissionRepository _admissionRepository;
+    private readonly IApplicantRepository _applicantRepository;
     private readonly AdmissionMapper _admissionMapper;
 
-    public AdmissionService(IAdmissionRepository admissionRepository, AdmissionMapper admissionMapper)
+    public AdmissionService(IAdmissionRepository admissionRepository, AdmissionMapper admissionMapper, IApplicantRepository applicantRepository)
     {
         _admissionRepository = admissionRepository;
+        _applicantRepository = applicantRepository;
         _admissionMapper = admissionMapper;
+    }
+
+
+    public async Task<Result<IEnumerable<AdmissionViewDto>>> GetAdmissionsByApplicantId(Guid applicantId)
+    {
+        return await _admissionRepository.GetByApplicantId(applicantId)
+            .Map(admissions =>
+                admissions.Select(a => _admissionMapper.ToViewDto(a)));
     }
 
     public async Task<Result<PagedResponce<AdmissionViewDto>>> GetAdmissions(
@@ -34,13 +45,13 @@ public class AdmissionService : IAdmissionService
         int pageSize)
     {
         var result = await _admissionRepository.GetMany(applicantName, program, faculty, status, isManaged, managerId, lastUpdateSortDirection, page, pageSize); 
-        return result.Map(pagedResponce =>
+        return result.Map(pagedResponse =>
             new PagedResponce<AdmissionViewDto>() {
-                Content = pagedResponce.Content.Select(_admissionMapper.ToViewDto).ToList(),
-                TotalCount = pagedResponce.TotalCount,
-                PageNumber = pagedResponce.PageNumber,
-                PageSize = pagedResponce.PageSize,
-                PagesCount = pagedResponce.PagesCount
+                Content = pagedResponse.Content.Select(_admissionMapper.ToViewDto).ToList(),
+                TotalCount = pagedResponse.TotalCount,
+                PageNumber = pagedResponse.PageNumber,
+                PageSize = pagedResponse.PageSize,
+                PagesCount = pagedResponse.PagesCount
             }
         );
     }
@@ -59,7 +70,23 @@ public class AdmissionService : IAdmissionService
 
     public async Task<Result> ChangeAdmissionStatus(Guid admissionId, AdmissionStatus status)
     {
-        return await _admissionRepository.ChangeAdmissionStatus(admissionId, status);
+        if (status != AdmissionStatus.Closed) 
+            return await _admissionRepository.ChangeAdmissionStatus(admissionId, status);
+
+        return await _admissionRepository.GetById(admissionId)
+            .Bind(async admission => await _applicantRepository.GetById(admission.ApplicantId)
+                .Map(applicant => (admission, applicant)))
+            .Tap(pair =>
+            {
+                pair.applicant.AddEvent(new AdmissionStatusClosedEvent(
+                    pair.admission.ApplicantId,
+                    pair.admission.Id,
+                    pair.applicant.Email,
+                    pair.applicant.Name
+                ));
+            })
+            .Bind(async pair => await _applicantRepository.Update(pair.applicant))
+            .Bind(async _ => await _admissionRepository.ChangeAdmissionStatus(admissionId, status));
     }
 
     public async Task<Result> DeleteAdmission(Guid admissionId)

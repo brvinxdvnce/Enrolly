@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Shared\Enrolly.Auth\Enrolly.Auth.csproj" />
     <ProjectReference Include="..\Enrolly.Admissions.Application\Enrolly.Admissions.Application.csproj" />
     <ProjectReference Include="..\Enrolly.Admissions.Domain\Enrolly.Admissions.Domain.csproj" />
     <ProjectReference Include="..\Enrolly.Admissions.Infrastructure\Enrolly.Admissions.Infrastructure.csproj" />

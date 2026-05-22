@@ -2,7 +2,7 @@
 using Enrolly.Shared.Logging.Utils.Result;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
-namespace Enrolly.Admissions.Presentation;
+namespace Enrolly.Admissions.Presentation.ResultUtils;
 
 public static class ResultErrorConverter
 {

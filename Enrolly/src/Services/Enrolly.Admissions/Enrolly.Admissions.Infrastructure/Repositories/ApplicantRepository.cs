@@ -1,5 +1,4 @@
-﻿
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using Enrolly.Admissions.Domain.Entities;
 using Enrolly.Admissions.Domain.Repositories;
 using Enrolly.Admissions.Infrastructure.Database;
@@ -47,14 +46,27 @@ public class ApplicantRepository : IApplicantRepository
             .Tap(async () => await _dbContext.SaveChangesAsync());
     }
 
+    public async Task<Result<Applicant>> Update(Applicant applicant)
+    {
+        _dbContext.Applicants.Update(applicant);
+        await _dbContext.SaveChangesAsync();
+        return Result.Success(applicant);
+    }
+
     public async Task<Result> AddManagerById(Guid applicantId, Guid managerId)
     {
-        var applicant = await _dbContext.Applicants.FirstOrDefaultAsync(a => a.Id == applicantId);
+        var applicant = await _dbContext.Applicants
+            .Include(a => a.Managers)
+            .FirstOrDefaultAsync(a => a.Id == applicantId);
+        
+        var manager = await _dbContext.Managers
+            .FirstOrDefaultAsync(a => a.Id == managerId);
         
         return await Result.SuccessIf(
                 applicant is not null, 
                 ResultError.NotFound($"Applicant with id {applicantId} not found."))
-            .Tap(() => applicant!.Managers.Add(managerId))
+            .Ensure(() => manager is not null, ResultError.NotFound("Manager not found"))
+            .Tap(() => applicant!.Managers.Add(manager))
             .Tap(async () => await _dbContext.SaveChangesAsync());
     }
 
@@ -63,9 +75,9 @@ public class ApplicantRepository : IApplicantRepository
         var applicant = await _dbContext.Applicants.FirstOrDefaultAsync(a => a.Id == applicantId);
         
         return await Result.SuccessIf(applicant is not null, applicant!, ResultError.NotFound("Applicant not found"))
-            .Ensure(ap => ap.Managers.Contains(managerId),
+            .Ensure(ap => ap.Managers.Any(m => m.Id == managerId),
                 ResultError.NotFound("Manager not found"))
-            .Tap(ap => ap.Managers.Remove(ap.Managers.First(id => id == managerId)))
+            .Tap(ap => ap.Managers.Remove(ap.Managers.First(m => m.Id == managerId)))
             .Tap(async _ => await _dbContext.SaveChangesAsync());
     }
 }
